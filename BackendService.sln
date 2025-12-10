@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.14.36616.10
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BackendService.API", "BackendService.API\BackendService.API.csproj", "{D212F886-1F30-7715-47A3-22113145FF29}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BackendService.DAL", "BackendService.DAL\BackendService.DAL.csproj", "{6FD20265-C37D-116F-F9B9-782298815D89}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{D212F886-1F30-7715-47A3-22113145FF29}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D212F886-1F30-7715-47A3-22113145FF29}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D212F886-1F30-7715-47A3-22113145FF29}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D212F886-1F30-7715-47A3-22113145FF29}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6FD20265-C37D-116F-F9B9-782298815D89}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6FD20265-C37D-116F-F9B9-782298815D89}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6FD20265-C37D-116F-F9B9-782298815D89}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6FD20265-C37D-116F-F9B9-782298815D89}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {BC0F94E5-FE6A-4B61-962A-6D92068AD610}
+	EndGlobalSection
+EndGlobal
