@@ -1,0 +1,5 @@
+C:\Users\Lizaveta\source\repos\BackendService\BackendService.Core\obj\Debug\net8.0\BackendService.Core.csproj.AssemblyReference.cache
+C:\Users\Lizaveta\source\repos\BackendService\BackendService.Core\obj\Debug\net8.0\BackendService.Core.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\Lizaveta\source\repos\BackendService\BackendService.Core\obj\Debug\net8.0\BackendService.Core.AssemblyInfoInputs.cache
+C:\Users\Lizaveta\source\repos\BackendService\BackendService.Core\obj\Debug\net8.0\BackendService.Core.AssemblyInfo.cs
+C:\Users\Lizaveta\source\repos\BackendService\BackendService.Core\obj\Debug\net8.0\BackendService.Core.csproj.CoreCompileInputs.cache
