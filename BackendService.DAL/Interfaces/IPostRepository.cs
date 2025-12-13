@@ -1,4 +1,4 @@
-﻿using BackendService.DAL.Models;
+﻿using BackendService.DAL.DTO;
 
 namespace BackendService.DAL.Interfaces
 {
@@ -9,7 +9,7 @@ namespace BackendService.DAL.Interfaces
         /// </summary>
         /// <param name="token">токен отмены</param>
         /// <returns>список постов</returns>
-        public Task<List<PostEntity>> GetPosts(CancellationToken token = default);
+        public Task<List<PostDTO>> GetPosts(CancellationToken token = default);
 
         /// <summary>
         /// Получение поста по идентификатору
@@ -17,7 +17,7 @@ namespace BackendService.DAL.Interfaces
         /// <param name="id">идентификатор поста</param>
         /// <param name="token">токен отмены</param>
         /// <returns>пост</returns>
-        public Task<PostEntity?> GetPostById(int id, CancellationToken token = default);
+        public Task<PostDTO?> GetPostById(int id, CancellationToken token = default);
 
         /// <summary>
         /// Удаление поста
@@ -34,6 +34,6 @@ namespace BackendService.DAL.Interfaces
         /// <param name="postEntity">пост для сохранения</param>
         /// <param name="token">токен отмены</param>
         /// <returns>сохранённый пост</returns>
-        public Task<PostEntity> SavePost(PostEntity postEntity, CancellationToken token = default);
+        public Task<PostEditDTO> SavePost(PostEditDTO postEntity, CancellationToken token = default);
     }
 }

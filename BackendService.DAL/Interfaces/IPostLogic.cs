@@ -1,4 +1,5 @@
-﻿using BackendService.DAL.Models;
+﻿using BackendService.DAL.DTO;
+using BackendService.DAL.Models;
 
 namespace BackendService.DAL.Interfaces
 {
@@ -8,27 +9,27 @@ namespace BackendService.DAL.Interfaces
         /// Получение списка постов
         /// </summary>
         /// <returns>список постов</returns>
-        Task<List<PostEntity>> GetPosts();
+        Task<List<PostDTO>> GetPosts(CancellationToken token = default);
 
         /// <summary>
         /// Получение поста по идентификатору
         /// </summary>
         /// <param name="id">идентификатор поста</param>
         /// <returns>пост</returns>
-        Task<PostEntity?> GetPostById(int id);
+        Task<PostDTO?> GetPostById(int id, CancellationToken token = default);
 
         /// <summary>
         /// Удаление поста
         /// </summary>
         /// <param name="id">идентификатор поста</param>
         /// <returns>задача удаления</returns>
-        Task DeletePost(int id);
+        Task DeletePost(int id, CancellationToken token = default);
 
         /// <summary>
         /// Сохранение поста
         /// </summary>
         /// <param name="post">пост</param>
         /// <returns>сохранённый пост</returns>
-        Task<PostEntity> SavePost(PostEntity post);       
+        Task<PostEditDTO> SavePost(PostEditDTO post, CancellationToken token = default);       
     }
 }

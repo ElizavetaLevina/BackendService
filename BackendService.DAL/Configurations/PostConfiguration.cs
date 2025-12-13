@@ -14,6 +14,9 @@ namespace BackendService.DAL.Configurations
                 .HasMany(c => c.Tags)
                 .WithMany(c => c.Posts)
                 .UsingEntity("PostTags");
+
+            builder.Property(c => c.DateCreate).HasColumnType("timestamp without time zone");
+            builder.Property(c => c.DateUpdate).HasColumnType("timestamp without time zone");
         }
     }
 }

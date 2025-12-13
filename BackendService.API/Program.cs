@@ -1,8 +1,12 @@
+using AutoMapper;
 using BackendService.DAL.Interfaces;
 using BackendService.DAL.Logics;
+using BackendService.DAL.Mappings;
 using BackendService.DAL.Models;
 using BackendService.DAL.Repositories;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging.Abstractions;
 using System.Diagnostics;
 using System.Threading.Tasks;
 
@@ -34,6 +38,15 @@ namespace BackendService.API
             builder.Services.AddScoped<ITagLogic, TagLogic>();
 
             builder.Services.AddProblemDetails();
+
+            var mapperConfig = new MapperConfiguration(c =>
+            {
+                c.AddProfile<AppMappingProfile>();
+            }, NullLoggerFactory.Instance);
+
+            mapperConfig.AssertConfigurationIsValid();
+
+            builder.Services.AddSingleton(mapperConfig.CreateMapper());
 
             var app = builder.Build();
 

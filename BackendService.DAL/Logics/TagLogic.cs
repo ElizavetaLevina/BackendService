@@ -1,4 +1,5 @@
-﻿using BackendService.DAL.Interfaces;
+﻿using BackendService.DAL.DTO;
+using BackendService.DAL.Interfaces;
 using BackendService.DAL.Models;
 
 namespace BackendService.DAL.Logics
@@ -7,12 +8,12 @@ namespace BackendService.DAL.Logics
     {
         private readonly ITagRepository _tagRepository = tagRepository;
 
-        public async Task<List<TagEntity>> GetTags()
+        public async Task<List<TagEditDTO>> GetTags()
         {
             return await _tagRepository.GetTags();
         }
 
-        public async Task<TagEntity?> GetTagById(int id)
+        public async Task<TagEditDTO?> GetTagById(int id)
         {
             return await _tagRepository.GetTagById(id);
         }
@@ -22,7 +23,7 @@ namespace BackendService.DAL.Logics
             await _tagRepository.DeleteTag(id);
         }
 
-        public async Task<TagEntity> SaveTag(TagEntity tagEntity)
+        public async Task<TagEditDTO> SaveTag(TagEditDTO tagEntity)
         {
             return await _tagRepository.SaveTag(tagEntity);
         }

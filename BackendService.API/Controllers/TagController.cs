@@ -1,4 +1,5 @@
-﻿using BackendService.DAL.Interfaces;
+﻿using BackendService.DAL.DTO;
+using BackendService.DAL.Interfaces;
 using BackendService.DAL.Models;
 using Microsoft.AspNetCore.Mvc;
 
@@ -11,13 +12,13 @@ namespace BackendService.API.Controllers
         private readonly ITagLogic _tagLogic = tagLogic;
 
         [HttpGet("list")]
-        public async Task<ActionResult<ICollection<TagEntity>>> GetPosts()
+        public async Task<ActionResult<ICollection<TagEditDTO>>> GetPosts()
         {
             return await _tagLogic.GetTags();
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<TagEntity?>> GetPostById(int id)
+        public async Task<ActionResult<TagEditDTO?>> GetPostById(int id)
         {
             return await _tagLogic.GetTagById(id);
         }
@@ -30,14 +31,14 @@ namespace BackendService.API.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult> CreatePost(TagEntity tagEntity)
+        public async Task<ActionResult> CreatePost(TagEditDTO tagEntity)
         {
             var result = await _tagLogic.SaveTag(tagEntity);
             return Ok(result);
         }
 
         [HttpPut]
-        public async Task<ActionResult> UpdatePost(TagEntity tagEntity)
+        public async Task<ActionResult> UpdatePost(TagEditDTO tagEntity)
         {
             var result = await _tagLogic.SaveTag(tagEntity);
             return Ok(result);

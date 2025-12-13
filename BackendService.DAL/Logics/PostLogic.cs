@@ -1,4 +1,5 @@
-﻿using BackendService.DAL.Interfaces;
+﻿using BackendService.DAL.DTO;
+using BackendService.DAL.Interfaces;
 using BackendService.DAL.Models;
 
 namespace BackendService.DAL.Logics
@@ -7,24 +8,24 @@ namespace BackendService.DAL.Logics
     {
         private readonly IPostRepository _postRepository = postRepository;
 
-        public async Task<List<PostEntity>> GetPosts()
+        public async Task<List<PostDTO>> GetPosts(CancellationToken token = default)
         {
-            return await _postRepository.GetPosts();
+            return await _postRepository.GetPosts(token);
         }
 
-        public async Task<PostEntity?> GetPostById(int id)
+        public async Task<PostDTO?> GetPostById(int id, CancellationToken token = default)
         {
-            return await _postRepository.GetPostById(id);
+            return await _postRepository.GetPostById(id, token);
         }
 
-        public async Task DeletePost(int id)
+        public async Task DeletePost(int id, CancellationToken token = default)
         {
-            await _postRepository.DeletePost(id);
+            await _postRepository.DeletePost(id, token);
         }
 
-        public async Task<PostEntity> SavePost(PostEntity post)
+        public async Task<PostEditDTO> SavePost(PostEditDTO post, CancellationToken token = default)
         {
-            return await _postRepository.SavePost(post);
+            return await _postRepository.SavePost(post, token);
         }
     }
 }

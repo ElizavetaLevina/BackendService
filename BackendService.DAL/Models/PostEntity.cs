@@ -8,9 +8,9 @@ namespace BackendService.DAL.Models
 
         public string TextPost { get; set; } = string.Empty;
 
-        public DateTime DataCreate { get; set; }
+        public DateTime DateCreate { get; set; }
 
-        public DateTime DataUpdate { get; set; }
+        public DateTime DateUpdate { get; set; }
 
         public bool Deleted { get; set; } = false;
 

@@ -1,4 +1,5 @@
-﻿using BackendService.DAL.Models;
+﻿using BackendService.DAL.DTO;
+using BackendService.DAL.Models;
 
 namespace BackendService.DAL.Interfaces
 {
@@ -8,14 +9,14 @@ namespace BackendService.DAL.Interfaces
         /// Получение списка тегов
         /// </summary>
         /// <returns>список тегов</returns>
-        Task<List<TagEntity>> GetTags();
+        Task<List<TagEditDTO>> GetTags();
 
         /// <summary>
         /// Получение тега по идентификатору
         /// </summary>
         /// <param name="id">идентификатор тега</param>
         /// <returns></returns>
-        Task<TagEntity?> GetTagById(int id);
+        Task<TagEditDTO?> GetTagById(int id);
 
         /// <summary>
         /// Удаление тега
@@ -29,6 +30,6 @@ namespace BackendService.DAL.Interfaces
         /// </summary>
         /// <param name="tagEntity">тег</param>
         /// <returns>сохранённый тег</returns>
-        Task<TagEntity> SaveTag(TagEntity tagEntity);
+        Task<TagEditDTO> SaveTag(TagEditDTO tagEntity);
     }
 }
