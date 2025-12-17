@@ -1,6 +1,4 @@
-﻿using BackendService.DAL.Models;
-
-namespace BackendService.DAL.DTO
+﻿namespace BackendService.Common.DTO
 {
     public class PostEditDTO
     {

@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
-using BackendService.DAL.DTO;
 using BackendService.DAL.Models;
+using BackendService.Common.DTO;
 
 namespace BackendService.DAL.Mappings
 {

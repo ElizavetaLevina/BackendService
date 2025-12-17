@@ -1,6 +1,5 @@
-﻿using BackendService.DAL.DTO;
-using BackendService.DAL.Interfaces;
-using BackendService.DAL.Models;
+﻿using BackendService.Common.DTO;
+using BackendService.BLL.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BackendService.API.Controllers

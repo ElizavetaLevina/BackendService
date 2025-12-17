@@ -1,8 +1,7 @@
-﻿using BackendService.DAL.DTO;
-using BackendService.DAL.Interfaces;
-using BackendService.DAL.Models;
+﻿using BackendService.BLL.Interfaces;
+using BackendService.Common.DTO;
 
-namespace BackendService.DAL.Logics
+namespace BackendService.BLL.Logics
 {
     public class PostLogic(IPostRepository postRepository) : IPostLogic
     {

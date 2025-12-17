@@ -18,6 +18,8 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\BackendService.BLL\BackendService.BLL.csproj" />
+    <ProjectReference Include="..\BackendService.Common\BackendService.Common.csproj" />
     <ProjectReference Include="..\BackendService.DAL\BackendService.DAL.csproj" />
   </ItemGroup>
 

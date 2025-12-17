@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
-using BackendService.DAL.DTO;
-using BackendService.DAL.Interfaces;
+using BackendService.Common.DTO;
+using BackendService.BLL.Interfaces;
 using BackendService.DAL.Models;
 using Microsoft.EntityFrameworkCore;
 
@@ -36,7 +36,7 @@ namespace BackendService.DAL.Repositories
                 _dbContext.Tags.Update(tag);
 
             await _dbContext.SaveChangesAsync(token);
-            return _mapper.Map<TagEditDTO>(tagEntity);
+            return _mapper.Map<TagEditDTO>(tag);
         }
     }
 }
