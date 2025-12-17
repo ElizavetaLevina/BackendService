@@ -1,21 +1,22 @@
-﻿using BackendService.DAL.Interfaces;
+﻿using AutoMapper;
+using BackendService.DAL.DTO;
+using BackendService.DAL.Interfaces;
 using BackendService.DAL.Models;
 using Microsoft.EntityFrameworkCore;
-
 namespace BackendService.DAL.Repositories
 {
-    public class PostRepository(ApplicationDbContext dbContext) : IPostRepository
+    public class PostRepository(ApplicationDbContext dbContext, IMapper mapper) : IPostRepository
     {
         private readonly ApplicationDbContext _dbContext = dbContext;
-
-        public async Task<List<PostEntity>> GetPosts(CancellationToken token = default)
+        private readonly IMapper _mapper = mapper;
+        public async Task<List<PostDTO>> GetPosts(CancellationToken token = default)
         {
-            return await _dbContext.Posts.ToListAsync(token);
+            return await _mapper.ProjectTo<PostDTO>(_dbContext.Set<PostEntity>().OrderBy(p => p.Id)).ToListAsync(token);
         }
 
-        public async Task<PostEntity?> GetPostById(int id, CancellationToken token = default)
+        public async Task<PostDTO?> GetPostById(int id, CancellationToken token = default)
         {
-            return await _dbContext.Posts.FirstOrDefaultAsync(c => c.Id == id, token);
+            return await _mapper.ProjectTo<PostDTO>(_dbContext.Posts).FirstOrDefaultAsync(c => c.Id == id, token);
         }
 
         public async Task DeletePost(int id, CancellationToken token = default)
@@ -23,15 +24,26 @@ namespace BackendService.DAL.Repositories
             await _dbContext.Posts.Where(c => c.Id == id).ExecuteUpdateAsync(c => c.SetProperty(p => p.Deleted, true), token);
         }
 
-        public async Task<PostEntity> SavePost(PostEntity postEntity, CancellationToken token = default)
+        public async Task<PostEditDTO> SavePost(PostEditDTO postEntity, CancellationToken token = default)
         {
-            if (postEntity.Id == 0)
-                _dbContext.Posts.Add(postEntity);
+            var post = _mapper.Map<PostEditDTO, PostEntity>(postEntity);
+
+            if (post.Id == 0)
+            {
+                post.DateCreate = DateTime.Now;
+                post.DateUpdate = DateTime.Now;
+
+                _dbContext.Posts.Add(post);
+            }
             else
-                _dbContext.Posts.Update(postEntity);
+            {
+                post.DateUpdate = DateTime.Now;
+
+                _dbContext.Posts.Update(post);
+            }
 
             await _dbContext.SaveChangesAsync(token);  
-            return postEntity;
+            return _mapper.Map<PostEditDTO>(post);
         } 
     }
 }

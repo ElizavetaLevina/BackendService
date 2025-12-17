@@ -1,4 +1,5 @@
-﻿using BackendService.DAL.Models;
+﻿using BackendService.DAL.DTO;
+using BackendService.DAL.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace BackendService.DAL.Interfaces
@@ -10,7 +11,7 @@ namespace BackendService.DAL.Interfaces
         /// </summary>
         /// <param name="token">токен отмены</param>
         /// <returns>список тегов</returns>
-        public Task<List<TagEntity>> GetTags(CancellationToken token = default);
+        public Task<List<TagEditDTO>> GetTags(CancellationToken token = default);
 
         /// <summary>
         /// Получение тега по идентификатору
@@ -18,7 +19,7 @@ namespace BackendService.DAL.Interfaces
         /// <param name="id">идентификатор тега</param>
         /// <param name="token">токен отмены</param>
         /// <returns>тег</returns>
-        public Task<TagEntity?> GetTagById(int id, CancellationToken token = default);
+        public Task<TagEditDTO?> GetTagById(int id, CancellationToken token = default);
 
         /// <summary>
         /// Удаление поста
@@ -34,6 +35,6 @@ namespace BackendService.DAL.Interfaces
         /// <param name="tagEntity">тег для сохранения</param>
         /// <param name="token">токен отмены</param>
         /// <returns>сохранённый тег</returns>
-        public Task<TagEntity> SaveTag(TagEntity tagEntity, CancellationToken token = default);
+        public Task<TagEditDTO> SaveTag(TagEditDTO tagEntity, CancellationToken token = default);
     }
 }

@@ -1,21 +1,24 @@
-﻿using BackendService.DAL.Interfaces;
+﻿using AutoMapper;
+using BackendService.DAL.DTO;
+using BackendService.DAL.Interfaces;
 using BackendService.DAL.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace BackendService.DAL.Repositories
 {
-    public class TagRepository(ApplicationDbContext dbContext) : ITagRepository
+    public class TagRepository(ApplicationDbContext dbContext, IMapper mapper) : ITagRepository
     {
         private readonly ApplicationDbContext _dbContext = dbContext;
+        private readonly IMapper _mapper = mapper;
 
-        public async Task<List<TagEntity>> GetTags(CancellationToken token = default)
+        public async Task<List<TagEditDTO>> GetTags(CancellationToken token = default)
         {
-            return await _dbContext.Tags.ToListAsync(token);
+            return await _mapper.ProjectTo<TagEditDTO>(_dbContext.Tags).ToListAsync(token);
         }
 
-        public async Task<TagEntity?> GetTagById(int id, CancellationToken token = default)
+        public async Task<TagEditDTO?> GetTagById(int id, CancellationToken token = default)
         {
-            return await _dbContext.Tags.FirstOrDefaultAsync(c => c.Id == id, token);
+            return await _mapper.ProjectTo<TagEditDTO>(_dbContext.Posts).FirstOrDefaultAsync(c => c.Id == id, token);
         }
 
         public async Task DeleteTag(int id, CancellationToken token = default)
@@ -23,15 +26,17 @@ namespace BackendService.DAL.Repositories
             await _dbContext.Tags.Where(c => c.Id == id).ExecuteUpdateAsync(c => c.SetProperty(p => p.Deleted, false), token);
         }
 
-        public async Task<TagEntity> SaveTag(TagEntity tagEntity, CancellationToken token = default)
+        public async Task<TagEditDTO> SaveTag(TagEditDTO tagEntity, CancellationToken token = default)
         {
-            if (tagEntity.Id == 0)
-                _dbContext.Tags.Add(tagEntity);
+            var tag = _mapper.Map<TagEditDTO, TagEntity>(tagEntity);
+
+            if (tag.Id == 0)
+                _dbContext.Tags.Add(tag);
             else
-                _dbContext.Tags.Update(tagEntity);
+                _dbContext.Tags.Update(tag);
 
             await _dbContext.SaveChangesAsync(token);
-            return tagEntity;
+            return _mapper.Map<TagEditDTO>(tagEntity);
         }
     }
 }
