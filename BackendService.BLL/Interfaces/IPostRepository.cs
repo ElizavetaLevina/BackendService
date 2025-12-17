@@ -1,6 +1,6 @@
-﻿using BackendService.DAL.DTO;
+﻿using BackendService.Common.DTO;
 
-namespace BackendService.DAL.Interfaces
+namespace BackendService.BLL.Interfaces
 {
     public interface IPostRepository
     {

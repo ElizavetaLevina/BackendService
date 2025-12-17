@@ -1,8 +1,7 @@
-﻿using BackendService.DAL.DTO;
-using BackendService.DAL.Interfaces;
-using BackendService.DAL.Models;
+﻿using BackendService.Common.DTO;
+using BackendService.BLL.Interfaces;
 
-namespace BackendService.DAL.Logics
+namespace BackendService.BLL.Logics
 {
     public class TagLogic(ITagRepository tagRepository) : ITagLogic
     {

@@ -1,14 +1,11 @@
 using AutoMapper;
-using BackendService.DAL.Interfaces;
-using BackendService.DAL.Logics;
+using BackendService.BLL.Interfaces;
+using BackendService.BLL.Logics;
 using BackendService.DAL.Mappings;
 using BackendService.DAL.Models;
 using BackendService.DAL.Repositories;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging.Abstractions;
-using System.Diagnostics;
-using System.Threading.Tasks;
 
 namespace BackendService.API
 {

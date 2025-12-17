@@ -1,8 +1,9 @@
 ﻿using AutoMapper;
-using BackendService.DAL.DTO;
-using BackendService.DAL.Interfaces;
+using BackendService.Common.DTO;
+using BackendService.BLL.Interfaces;
 using BackendService.DAL.Models;
 using Microsoft.EntityFrameworkCore;
+
 namespace BackendService.DAL.Repositories
 {
     public class PostRepository(ApplicationDbContext dbContext, IMapper mapper) : IPostRepository

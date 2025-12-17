@@ -20,4 +20,9 @@
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="9.0.4" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\BackendService.BLL\BackendService.BLL.csproj" />
+    <ProjectReference Include="..\BackendService.Common\BackendService.Common.csproj" />
+  </ItemGroup>
+
 </Project>
