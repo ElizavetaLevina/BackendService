@@ -1,5 +1,8 @@
 ﻿namespace BackendService.Common.DTO
 {
+    /// <summary>
+    /// Редактирование тега
+    /// </summary>
     public class TagEditDTO
     {
         public int Id { get; set; }

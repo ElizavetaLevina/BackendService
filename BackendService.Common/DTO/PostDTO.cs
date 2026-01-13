@@ -1,8 +1,13 @@
 ﻿namespace BackendService.Common.DTO
 {
+    /// <summary>
+    /// Просмотр поста
+    /// </summary>
     public class PostDTO
     {
         public int Id { get; set; }
+
+        public string Title { get; set; } = string.Empty;
 
         public string TextPost { get; set; } = string.Empty;
 

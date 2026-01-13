@@ -32,14 +32,11 @@ namespace BackendService.DAL.Repositories
             if (post.Id == 0)
             {
                 post.DateCreate = DateTime.Now;
-                post.DateUpdate = DateTime.Now;
-
                 _dbContext.Posts.Add(post);
             }
             else
             {
                 post.DateUpdate = DateTime.Now;
-
                 _dbContext.Posts.Update(post);
             }
 
