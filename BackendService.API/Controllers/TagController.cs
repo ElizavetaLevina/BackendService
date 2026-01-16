@@ -1,6 +1,7 @@
-﻿using BackendService.Common.DTO;
-using BackendService.BLL.Interfaces;
+﻿using BackendService.BLL.Interfaces;
+using BackendService.Common.DTO;
 using Microsoft.AspNetCore.Mvc;
+using Swashbuckle.AspNetCore.Annotations;
 
 namespace BackendService.API.Controllers
 {
@@ -10,37 +11,86 @@ namespace BackendService.API.Controllers
     {
         private readonly ITagLogic _tagLogic = tagLogic;
 
+        /// <summary>
+        /// Получение коллекции тегов
+        /// </summary>
+        /// <param name="token">токен отмены</param>
+        /// <returns>коллекция тегов</returns>
+        [SwaggerOperation(Summary = "Получение коллекции тегов", Description = "Возвращает коллекцию всех тегов из базы данных")]
+        [SwaggerResponse(200, "Успешный ответ", typeof(ICollection<TagEditDTO>))]
+        [SwaggerResponse(500, "Внутренняя ошибка сервера")]
         [HttpGet("list")]
-        public async Task<ActionResult<ICollection<TagEditDTO>>> GetPosts()
+        public async Task<ActionResult<ICollection<TagEditDTO>>> GetTags(CancellationToken token = default)
         {
-            return await _tagLogic.GetTags();
+            return Ok(await _tagLogic.GetTags(token));
         }
 
+        /// <summary>
+        /// Получение тега по идентификатору
+        /// </summary>
+        /// <param name="id">идентификатор тега</param>
+        /// <param name="token">токен отмены</param>
+        /// <returns>тег</returns>
+        [SwaggerOperation(Summary = "Получение тега", Description = "Возвращает тег по его идентификатору из базы данных")]
+        [SwaggerResponse(200, "Успешный ответ", typeof(TagEditDTO))]
+        [SwaggerResponse(400, "Неверный формат ID (отрицательное или нулевое значение)")]
+        [SwaggerResponse(404, "Тег с указанным ID не найден")]
+        [SwaggerResponse(500, "Внутренняя ошибка сервера")]
         [HttpGet("{id}")]
-        public async Task<ActionResult<TagEditDTO?>> GetPostById(int id)
+        public async Task<ActionResult<TagEditDTO>> GetTagById(int id, CancellationToken token = default)
         {
-            return await _tagLogic.GetTagById(id);
+            return Ok(await _tagLogic.GetTagById(id, token));
         }
 
+        /// <summary>
+        /// Удаление тега
+        /// </summary>
+        /// <param name="id">идентификатор тега</param>
+        /// <param name="token">токен отмены</param>
+        /// <returns>пустой ответ со статусом 204 в случае успеха</returns>
+        [SwaggerOperation(Summary = "Удаление тега", Description = "Удаляет тег по его идентификатору из базы данных")]
+        [SwaggerResponse(400, "Неверный формат ID (отрицательное или нулевое значение)")]
+        [SwaggerResponse(404, "Тег с указанным ID не найден")]
+        [SwaggerResponse(204, "Тег успешно удалён")]
+        [SwaggerResponse(500, "Внутренняя ошибка сервера")]
         [HttpDelete("{id}")]
-        public async Task<ActionResult> DeleteTag(int id)
+        public async Task<ActionResult> DeleteTag(int id, CancellationToken token = default)
         {
-            await _tagLogic.DeleteTag(id);
+            await _tagLogic.DeleteTag(id, token);
             return NoContent();
         }
 
+        /// <summary>
+        /// Создание тега
+        /// </summary>
+        /// <param name="tag">тег</param>
+        /// <param name="token">токен отмены</param>
+        /// <returns>созданный тег</returns>
+        [SwaggerOperation(Summary = "Создание тега", Description = "Создаёт тег")]
+        [SwaggerResponse(200, "Тег успешно создан", typeof(PostDTO))]
+        [SwaggerResponse(400, "Неверные данные тега")]
+        [SwaggerResponse(500, "Внутренняя ошибка сервера")]
         [HttpPost]
-        public async Task<ActionResult> CreatePost(TagEditDTO tagEntity)
+        public async Task<ActionResult<TagEditDTO>> CreateTag(TagEditDTO tag, CancellationToken token = default)
         {
-            var result = await _tagLogic.SaveTag(tagEntity);
-            return Ok(result);
+            return Ok(await _tagLogic.SaveTag(tag, token));
         }
 
+        /// <summary>
+        /// Обновление тега
+        /// </summary>
+        /// <param name="tag">тег</param>
+        /// <param name="token">токен отмены</param>
+        /// <returns>обновлённый тег</returns>
+        [SwaggerOperation(Summary = "Редактирование тега", Description = "Редактирует тег по его идентификатору в базе данных")]
+        [SwaggerResponse(400, "Неверный формат ID (отрицательное или нулевое значение)")]
+        [SwaggerResponse(404, "Тег с указанным ID не найден")]
+        [SwaggerResponse(200, "Успешный ответ", typeof(PostDTO))]
+        [SwaggerResponse(500, "Внутренняя ошибка сервера")]
         [HttpPut]
-        public async Task<ActionResult> UpdatePost(TagEditDTO tagEntity)
+        public async Task<ActionResult<TagEditDTO>> UpdateTag(TagEditDTO tag, CancellationToken token = default)
         {
-            var result = await _tagLogic.SaveTag(tagEntity);
-            return Ok(result);
+            return Ok(await _tagLogic.SaveTag(tag, token));
         }
     }
 }

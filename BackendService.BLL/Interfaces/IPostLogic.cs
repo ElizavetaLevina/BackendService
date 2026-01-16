@@ -29,6 +29,6 @@ namespace BackendService.BLL.Interfaces
         /// </summary>
         /// <param name="post">пост</param>
         /// <returns>сохранённый пост</returns>
-        Task<PostEditDTO> SavePost(PostEditDTO post, CancellationToken token = default);       
+        Task<PostEditDTO> SavePost(PostEditDTO post, CancellationToken token = default);
     }
 }

@@ -6,12 +6,14 @@ using BackendService.DAL.Models;
 using BackendService.DAL.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging.Abstractions;
+using Microsoft.OpenApi.Models;
+using System.Reflection;
 
 namespace BackendService.API
 {
     public class Program
     {
-        public static async Task Main(string[] args)
+        public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
             var config = builder.Configuration;
@@ -20,7 +22,20 @@ namespace BackendService.API
             builder.Services.AddControllers();
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
-            builder.Services.AddSwaggerGen();
+            //builder.Services.AddSwaggerGen();
+            builder.Services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1", new OpenApiInfo { Title = "BackendService.API", Version = "v1" });
+
+                var xmlFail = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+                var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFail);
+                if (File.Exists(xmlPath))
+                {
+                    c.IncludeXmlComments(xmlPath);
+                }
+
+                c.EnableAnnotations();
+            });
 
             builder.Services.AddDbContext<ApplicationDbContext>(
                 option =>
@@ -34,6 +49,7 @@ namespace BackendService.API
             builder.Services.AddScoped<IPostLogic, PostLogic>();
             builder.Services.AddScoped<ITagLogic, TagLogic>();
 
+            builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
             builder.Services.AddProblemDetails();
 
             var mapperConfig = new MapperConfiguration(c =>

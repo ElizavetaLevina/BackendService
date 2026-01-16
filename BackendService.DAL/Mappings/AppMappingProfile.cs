@@ -12,7 +12,7 @@ namespace BackendService.DAL.Mappings
                 .ForMember(s => s.Tags, d => d.MapFrom(c => c.Tags.Select(i => i.Id).ToHashSet()));
 
             CreateMap<PostEditDTO, PostEntity>()
-                .ForMember(s => s.Tags, d => d.MapFrom(c => c.Tags.Select(i => new TagEntity { Id = i }).ToList()))
+                .ForMember(s => s.Tags, d => d.Ignore())
                 .ForMember(s => s.DateCreate, d => d.Ignore())
                 .ForMember(s => s.DateUpdate, d => d.Ignore())
                 .ForMember(s => s.Deleted, d => d.Ignore());

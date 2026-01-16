@@ -30,9 +30,9 @@ namespace BackendService.BLL.Interfaces
         /// <summary>
         /// Сохранение тега
         /// </summary>
-        /// <param name="tagEntity">тег для сохранения</param>
+        /// <param name="tag">тег для сохранения</param>
         /// <param name="token">токен отмены</param>
         /// <returns>сохранённый тег</returns>
-        public Task<TagEditDTO> SaveTag(TagEditDTO tagEntity, CancellationToken token = default);
+        public Task<TagEditDTO> SaveTag(TagEditDTO tag, CancellationToken token = default);
     }
 }

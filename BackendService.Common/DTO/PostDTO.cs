@@ -13,7 +13,7 @@
 
         public DateTime DateCreate { get; set; }
 
-        public DateTime DateUpdate { get; set; }
+        public DateTime? DateUpdate { get; set; } = null;
 
         public HashSet<int> Tags { get; set; } = [];
     }

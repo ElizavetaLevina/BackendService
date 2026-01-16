@@ -17,31 +17,39 @@ namespace BackendService.DAL.Repositories
 
         public async Task<PostDTO?> GetPostById(int id, CancellationToken token = default)
         {
-            return await _mapper.ProjectTo<PostDTO>(_dbContext.Posts).FirstOrDefaultAsync(c => c.Id == id, token);
+            return await _mapper.ProjectTo<PostDTO>(_dbContext.Set<PostEntity>()).FirstOrDefaultAsync(c => c.Id == id, token);
         }
 
         public async Task DeletePost(int id, CancellationToken token = default)
         {
-            await _dbContext.Posts.Where(c => c.Id == id).ExecuteUpdateAsync(c => c.SetProperty(p => p.Deleted, true), token);
+            var postEntity = await _dbContext.Posts.Include(p => p.Tags).FirstAsync(p => p.Id == id, token);
+            postEntity.Tags.Clear();
+            postEntity.Deleted = true;
+            await _dbContext.SaveChangesAsync(token);
         }
 
-        public async Task<PostEditDTO> SavePost(PostEditDTO postEntity, CancellationToken token = default)
+        public async Task<PostEditDTO> SavePost(PostEditDTO post, CancellationToken token = default)
         {
-            var post = _mapper.Map<PostEditDTO, PostEntity>(postEntity);
+            PostEntity postEntity;
 
-            if (post.Id == 0)
+            if (post.Id != 0)
             {
-                post.DateCreate = DateTime.Now;
-                _dbContext.Posts.Add(post);
+                postEntity = await _dbContext.Posts.Include(p => p.Tags).FirstAsync(p => p.Id == post.Id, token);
+                _mapper.Map(post, postEntity);
+                postEntity.Tags = await _dbContext.Tags.Where(c => post.Tags.Contains(c.Id)).ToListAsync(token);
+                postEntity.DateUpdate = DateTime.Now;
             }
             else
             {
-                post.DateUpdate = DateTime.Now;
-                _dbContext.Posts.Update(post);
+                postEntity = _mapper.Map<PostEntity>(post);
+                postEntity.DateCreate = DateTime.Now;
+                postEntity.Tags = await _dbContext.Tags.Where(c => post.Tags.Contains(c.Id)).ToListAsync(token);
+
+                _dbContext.Posts.Add(postEntity);
             }
 
-            await _dbContext.SaveChangesAsync(token);  
-            return _mapper.Map<PostEditDTO>(post);
+            await _dbContext.SaveChangesAsync(token);
+            return _mapper.Map<PostEditDTO>(postEntity);
         } 
     }
 }

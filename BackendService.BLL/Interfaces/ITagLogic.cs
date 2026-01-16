@@ -8,27 +8,27 @@ namespace BackendService.BLL.Interfaces
         /// Получение списка тегов
         /// </summary>
         /// <returns>список тегов</returns>
-        Task<List<TagEditDTO>> GetTags();
+        Task<List<TagEditDTO>> GetTags(CancellationToken token = default);
 
         /// <summary>
         /// Получение тега по идентификатору
         /// </summary>
         /// <param name="id">идентификатор тега</param>
         /// <returns></returns>
-        Task<TagEditDTO?> GetTagById(int id);
+        Task<TagEditDTO?> GetTagById(int id, CancellationToken token = default);
 
         /// <summary>
         /// Удаление тега
         /// </summary>
         /// <param name="id">идентификатор тега</param>
         /// <returns>задача удаления</returns>
-        Task DeleteTag(int id);
+        Task DeleteTag(int id, CancellationToken token = default);
 
         /// <summary>
         /// Сохранение тега
         /// </summary>
-        /// <param name="tagEntity">тег</param>
+        /// <param name="tag">тег</param>
         /// <returns>сохранённый тег</returns>
-        Task<TagEditDTO> SaveTag(TagEditDTO tagEntity);
+        Task<TagEditDTO> SaveTag(TagEditDTO tag, CancellationToken token = default);
     }
 }

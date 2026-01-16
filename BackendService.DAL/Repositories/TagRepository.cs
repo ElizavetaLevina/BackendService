@@ -13,30 +13,39 @@ namespace BackendService.DAL.Repositories
 
         public async Task<List<TagEditDTO>> GetTags(CancellationToken token = default)
         {
-            return await _mapper.ProjectTo<TagEditDTO>(_dbContext.Tags).ToListAsync(token);
+            return await _mapper.ProjectTo<TagEditDTO>(_dbContext.Set<TagEntity>()).ToListAsync(token);
         }
 
         public async Task<TagEditDTO?> GetTagById(int id, CancellationToken token = default)
         {
-            return await _mapper.ProjectTo<TagEditDTO>(_dbContext.Posts).FirstOrDefaultAsync(c => c.Id == id, token);
+            return await _mapper.ProjectTo<TagEditDTO>(_dbContext.Set<TagEntity>()).FirstOrDefaultAsync(c => c.Id == id, token);
         }
 
         public async Task DeleteTag(int id, CancellationToken token = default)
         {
-            await _dbContext.Tags.Where(c => c.Id == id).ExecuteUpdateAsync(c => c.SetProperty(p => p.Deleted, false), token);
+            var postEntity = await _dbContext.Tags.Include(p => p.Posts).FirstAsync(p => p.Id == id, token);
+            postEntity.Posts.Clear();
+            postEntity.Deleted = true;
+            await _dbContext.SaveChangesAsync(token);
         }
 
-        public async Task<TagEditDTO> SaveTag(TagEditDTO tagEntity, CancellationToken token = default)
+        public async Task<TagEditDTO> SaveTag(TagEditDTO tag, CancellationToken token = default)
         {
-            var tag = _mapper.Map<TagEditDTO, TagEntity>(tagEntity);
+            TagEntity tagEntity;
 
-            if (tag.Id == 0)
-                _dbContext.Tags.Add(tag);
+            if (tag.Id != 0)
+            {
+                tagEntity = await _dbContext.Tags.FirstAsync(c => c.Id == tag.Id, token);
+                _mapper.Map(tag, tagEntity);
+            }
             else
-                _dbContext.Tags.Update(tag);
+            {
+                tagEntity = _mapper.Map<TagEntity>(tag);
+                _dbContext.Tags.Add(tagEntity);
+            }
 
             await _dbContext.SaveChangesAsync(token);
-            return _mapper.Map<TagEditDTO>(tag);
+            return _mapper.Map<TagEditDTO>(tagEntity);
         }
     }
 }
