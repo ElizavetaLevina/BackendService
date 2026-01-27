@@ -12,5 +12,6 @@
         public string TextPost { get; set; } = string.Empty;
 
         public HashSet<int> Tags { get; set; } = [];
+        public HashSet<int> Images { get; set; } = [];
     }
 }

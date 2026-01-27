@@ -10,6 +10,8 @@ namespace BackendService.DAL.Configurations
         {
             builder.HasKey(c => c.Id);
 
+            builder.Property(c => c.DateCreate).HasColumnType("timestamp without time zone");
+
             builder.HasIndex(c => c.Name).IsUnique();
         }
     }

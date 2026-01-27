@@ -12,15 +12,15 @@ namespace BackendService.API.Controllers
         private readonly ITagLogic _tagLogic = tagLogic;
 
         /// <summary>
-        /// Получение коллекции тегов
+        /// Получение списка тегов
         /// </summary>
         /// <param name="token">токен отмены</param>
-        /// <returns>коллекция тегов</returns>
-        [SwaggerOperation(Summary = "Получение коллекции тегов", Description = "Возвращает коллекцию всех тегов из базы данных")]
-        [SwaggerResponse(200, "Успешный ответ", typeof(ICollection<TagEditDTO>))]
+        /// <returns>список тегов</returns>
+        [SwaggerOperation(Summary = "Получение списка тегов", Description = "Возвращает список всех тегов из базы данных")]
+        [SwaggerResponse(200, "Успешный ответ", typeof(IReadOnlyList<TagEditDTO>))]
         [SwaggerResponse(500, "Внутренняя ошибка сервера")]
         [HttpGet("list")]
-        public async Task<ActionResult<ICollection<TagEditDTO>>> GetTags(CancellationToken token = default)
+        public async Task<ActionResult<IReadOnlyList<TagEditDTO>>> GetTags(CancellationToken token = default)
         {
             return Ok(await _tagLogic.GetTags(token));
         }

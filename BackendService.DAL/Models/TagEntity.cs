@@ -8,6 +8,8 @@ namespace BackendService.DAL.Models
 
         public string Name { get; set; } = string.Empty;
 
+        public DateTime DateCreate { get; set; }
+
         public bool Deleted { get; set; } = false;
 
         public ICollection<PostEntity> Posts { get; set; } = [];

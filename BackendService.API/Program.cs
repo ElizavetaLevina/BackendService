@@ -4,10 +4,12 @@ using BackendService.BLL.Logics;
 using BackendService.DAL.Mappings;
 using BackendService.DAL.Models;
 using BackendService.DAL.Repositories;
+using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.OpenApi.Models;
 using System.Reflection;
+using System.Text.Json;
 
 namespace BackendService.API
 {
@@ -45,9 +47,11 @@ namespace BackendService.API
 
             builder.Services.AddScoped<IPostRepository, PostRepository>();
             builder.Services.AddScoped<ITagRepository, TagRepository>();
+            builder.Services.AddScoped<IImageRepository, ImageRepository>();
 
             builder.Services.AddScoped<IPostLogic, PostLogic>();
             builder.Services.AddScoped<ITagLogic, TagLogic>();
+            builder.Services.AddScoped<IImageLogic, ImageLogic>();
 
             builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
             builder.Services.AddProblemDetails();

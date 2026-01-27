@@ -7,20 +7,21 @@ namespace BackendService.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class PostController(IPostLogic postLogic) : ControllerBase
+    public class PostController(IPostLogic postLogic, IImageLogic imageLogic) : ControllerBase
     {
         private readonly IPostLogic _postLogic = postLogic;
+        private readonly IImageLogic _imageLogic = imageLogic;
 
         /// <summary>
-        /// Получение коллекции постов
+        /// Получение списка постов
         /// </summary>
         /// <param name="token">токен отмены</param>
-        /// <returns>коллекция постов</returns>
-        [SwaggerOperation(Summary = "Получение коллекции постов", Description = "Возвращает коллекцию всех постов из базы данных")]
-        [SwaggerResponse(200, "Успешный ответ", typeof(ICollection<PostDTO>))]
+        /// <returns>список постов</returns>
+        [SwaggerOperation(Summary = "Получение списка постов", Description = "Возвращает список всех постов из базы данных")]
+        [SwaggerResponse(200, "Успешный ответ", typeof(IReadOnlyList<PostDTO>))]
         [SwaggerResponse(500, "Внутренняя ошибка сервера")]
         [HttpGet("list")]
-        public async Task<ActionResult<ICollection<PostDTO>>> GetPosts(CancellationToken token = default)
+        public async Task<ActionResult<IReadOnlyList<PostDTO>>> GetPosts(CancellationToken token = default)
         {
             return Ok(await _postLogic.GetPosts(token));
         }
@@ -49,9 +50,9 @@ namespace BackendService.API.Controllers
         /// <param name="token">токен отмены</param>
         /// <returns>пустой ответ со статусом 204 в случае успеха</returns>
         [SwaggerOperation(Summary = "Удаление поста", Description = "Удаляет пост по его идентификатору из базы данных")]
+        [SwaggerResponse(204, "Пост успешно удалён")]
         [SwaggerResponse(400, "Неверный формат ID (отрицательное или нулевое значение)")]
         [SwaggerResponse(404, "Пост с указанным ID не найден")]
-        [SwaggerResponse(204, "Пост успешно удалён")]
         [SwaggerResponse(500, "Внутренняя ошибка сервера")]
         [HttpDelete("{id}")]
         public async Task<ActionResult> DeletePost(int id, CancellationToken token = default)
@@ -91,6 +92,61 @@ namespace BackendService.API.Controllers
         public async Task<ActionResult<PostEditDTO>> UpdatePost(PostEditDTO post, CancellationToken token = default)
         {
             return Ok(await _postLogic.SavePost(post, token));
+        }
+
+        /// <summary>
+        /// Получение списка картинок для поста
+        /// </summary>
+        /// <param name="postId">id поста</param>
+        /// <param name="token">токен отмены</param>
+        /// <returns>список с данными картинок</returns>
+        [SwaggerOperation(Summary = "Получение списка картинок для поста", Description = "Возвращает список картинок для поста по его идентификатору из базы данных")]
+        [SwaggerResponse(200, "Успешный ответ")]
+        [SwaggerResponse(400, "Неверный формат ID (отрицательное или нулевое значение)")]
+        [SwaggerResponse(404, "Пост с указанным ID не найден")]
+        [SwaggerResponse(500, "Внутренняя ошибка сервера")]
+        [HttpGet("images_list")]
+        public async Task<ActionResult> GetPostImages(int postId, CancellationToken token = default)
+        {
+            var images = await _imageLogic.GetPostImages(postId, token);
+            
+            return Ok(images);
+        }
+
+        /// <summary>
+        /// Удаление картинки
+        /// </summary>
+        /// <param name="id">идентификатор картинки</param>
+        /// <param name="token">токен отмены</param>
+        /// <returns>пустой ответ со статусом 204 в случае успеха</returns>
+        [SwaggerOperation(Summary = "Удаление картинки", Description = "Удаляет картинку по её идентификатору из базы данных")]
+        [SwaggerResponse(204, "Картинка успешно удалена")]
+        [SwaggerResponse(400, "Неверный формат ID (отрицательное или нулевое значение)")]
+        [SwaggerResponse(404, "Картинка с указанным ID не найдена")]
+        [SwaggerResponse(500, "Внутренняя ошибка сервера")]
+        [HttpDelete("image_{id}")]
+        public async Task<ActionResult> DeleteImage(int id, CancellationToken token = default)
+        {
+            await _imageLogic.DeleteImage(id, token);
+            return NoContent();
+        }
+
+        /// <summary>
+        /// Загрузка картинки
+        /// </summary>
+        /// <param name="image">картинка для загрузки</param>
+        /// <param name="postId">идентификатор поста</param>
+        /// <param name="token">токен отмены</param>
+        /// <returns>загруженная картинка</returns>
+        [SwaggerOperation(Summary = "Загрузка картинки", Description = "Загружает картинку для поста в базу данных")]
+        [SwaggerResponse(200, "Картинка успешно загружена")]
+        [SwaggerResponse(400, "Неверные данные")]
+        [SwaggerResponse(500, "Внутренняя ошибка сервера")]
+        [HttpPost("image")]
+        public async Task<ActionResult<int>> CreateImage(IFormFile image, int postId, CancellationToken token = default)
+        {
+            var result = await _imageLogic.SaveImage(image, postId, token);
+            return Ok(result);
         }
     }
 }

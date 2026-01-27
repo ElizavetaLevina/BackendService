@@ -7,6 +7,7 @@ namespace BackendService.DAL.Models
     {
         public DbSet<PostEntity> Posts { get; set; }
         public DbSet<TagEntity> Tags { get; set; }
+        public DbSet<ImageEntity> Images { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -14,6 +15,7 @@ namespace BackendService.DAL.Models
 
             modelBuilder.ApplyConfiguration(new PostConfiguration());
             modelBuilder.ApplyConfiguration(new TagConfiguration());
+            modelBuilder.ApplyConfiguration(new ImageConfigurations());
         }
     }
 }

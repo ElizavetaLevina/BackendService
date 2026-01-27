@@ -12,7 +12,7 @@ namespace BackendService.DAL.Repositories
         private readonly IMapper _mapper = mapper;
         public async Task<List<PostDTO>> GetPosts(CancellationToken token = default)
         {
-            return await _mapper.ProjectTo<PostDTO>(_dbContext.Set<PostEntity>().OrderBy(p => p.Id)).ToListAsync(token);
+            return await _mapper.ProjectTo<PostDTO>(_dbContext.Set<PostEntity>().Where(c => c.Deleted == false).OrderBy(p => p.Id)).ToListAsync(token);
         }
 
         public async Task<PostDTO?> GetPostById(int id, CancellationToken token = default)
@@ -22,8 +22,9 @@ namespace BackendService.DAL.Repositories
 
         public async Task DeletePost(int id, CancellationToken token = default)
         {
-            var postEntity = await _dbContext.Posts.Include(p => p.Tags).FirstAsync(p => p.Id == id, token);
+            var postEntity = await _dbContext.Posts.Include(p => p.Tags).Include(p => p.Images).FirstAsync(p => p.Id == id, token);
             postEntity.Tags.Clear();
+            postEntity.Images?.Clear();
             postEntity.Deleted = true;
             await _dbContext.SaveChangesAsync(token);
         }
@@ -34,9 +35,10 @@ namespace BackendService.DAL.Repositories
 
             if (post.Id != 0)
             {
-                postEntity = await _dbContext.Posts.Include(p => p.Tags).FirstAsync(p => p.Id == post.Id, token);
+                postEntity = await _dbContext.Posts.Include(p => p.Tags).Include(p => p.Images).FirstAsync(p => p.Id == post.Id, token);
                 _mapper.Map(post, postEntity);
                 postEntity.Tags = await _dbContext.Tags.Where(c => post.Tags.Contains(c.Id)).ToListAsync(token);
+                postEntity.Images = await _dbContext.Images.Where(c => post.Images.Contains(c.Id)).ToListAsync(token);
                 postEntity.DateUpdate = DateTime.Now;
             }
             else
