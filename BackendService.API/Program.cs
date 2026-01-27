@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.OpenApi.Models;
 using System.Reflection;
-using System.Text.Json;
+using DotNetEnv;
 
 namespace BackendService.API
 {
@@ -44,6 +44,17 @@ namespace BackendService.API
                 {
                     option.UseNpgsql(config.GetConnectionString(nameof(ApplicationDbContext)));
                 });
+
+            Env.Load();
+
+            builder.Services.AddSingleton<INewsRepository, NewsRepository>(c =>
+            {
+                var apiKey = Environment.GetEnvironmentVariable("API_KEY");
+                var baseUrl = Environment.GetEnvironmentVariable("BASE_API_URL");
+                return new NewsRepository(apiKey, baseUrl);
+            });
+
+            builder.Configuration.AddEnvironmentVariables();
 
             builder.Services.AddScoped<IPostRepository, PostRepository>();
             builder.Services.AddScoped<ITagRepository, TagRepository>();
