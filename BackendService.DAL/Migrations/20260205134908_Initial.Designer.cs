@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace BackendService.DAL.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20251212143431_UpdateDateTimeColumns")]
-    partial class UpdateDateTimeColumns
+    [Migration("20260205134908_Initial")]
+    partial class Initial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -24,6 +24,31 @@ namespace BackendService.DAL.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
+
+            modelBuilder.Entity("BackendService.DAL.Models.ImageEntity", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<byte[]>("Data")
+                        .IsRequired()
+                        .HasColumnType("bytea");
+
+                    b.Property<bool>("Deleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<int>("PostId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PostId");
+
+                    b.ToTable("Images");
+                });
 
             modelBuilder.Entity("BackendService.DAL.Models.PostEntity", b =>
                 {
@@ -36,13 +61,17 @@ namespace BackendService.DAL.Migrations
                     b.Property<DateTime>("DateCreate")
                         .HasColumnType("timestamp without time zone");
 
-                    b.Property<DateTime>("DateUpdate")
+                    b.Property<DateTime?>("DateUpdate")
                         .HasColumnType("timestamp without time zone");
 
                     b.Property<bool>("Deleted")
                         .HasColumnType("boolean");
 
                     b.Property<string>("TextPost")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Title")
                         .IsRequired()
                         .HasColumnType("text");
 
@@ -58,6 +87,9 @@ namespace BackendService.DAL.Migrations
                         .HasColumnType("integer");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("DateCreate")
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<bool>("Deleted")
                         .HasColumnType("boolean");
@@ -89,6 +121,17 @@ namespace BackendService.DAL.Migrations
                     b.ToTable("PostTags");
                 });
 
+            modelBuilder.Entity("BackendService.DAL.Models.ImageEntity", b =>
+                {
+                    b.HasOne("BackendService.DAL.Models.PostEntity", "Post")
+                        .WithMany("Images")
+                        .HasForeignKey("PostId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Post");
+                });
+
             modelBuilder.Entity("PostTags", b =>
                 {
                     b.HasOne("BackendService.DAL.Models.PostEntity", null)
@@ -102,6 +145,11 @@ namespace BackendService.DAL.Migrations
                         .HasForeignKey("TagsId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("BackendService.DAL.Models.PostEntity", b =>
+                {
+                    b.Navigation("Images");
                 });
 #pragma warning restore 612, 618
         }

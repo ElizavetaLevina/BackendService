@@ -1,7 +1,9 @@
 ﻿using BackendService.BLL.Interfaces;
 using BackendService.Common.DTO;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
+using System.Security.Claims;
 
 namespace BackendService.API.Controllers
 {
@@ -20,6 +22,7 @@ namespace BackendService.API.Controllers
         [SwaggerOperation(Summary = "Получение списка постов", Description = "Возвращает список всех постов из базы данных")]
         [SwaggerResponse(200, "Успешный ответ", typeof(IReadOnlyList<PostDTO>))]
         [SwaggerResponse(500, "Внутренняя ошибка сервера")]
+        [Authorize(Policy = "UserRead")]
         [HttpGet("list")]
         public async Task<ActionResult<IReadOnlyList<PostDTO>>> GetPosts(CancellationToken token = default)
         {
@@ -37,6 +40,7 @@ namespace BackendService.API.Controllers
         [SwaggerResponse(404, "Пост с указанным ID не найден")]
         [SwaggerResponse(200, "Успешный ответ", typeof(PostDTO))]
         [SwaggerResponse(500, "Внутренняя ошибка сервера")]
+        [Authorize(Policy = "UserRead")]
         [HttpGet("{id}")]
         public async Task<ActionResult<PostDTO>> GetPostById(int id, CancellationToken token = default)
         {
@@ -54,6 +58,7 @@ namespace BackendService.API.Controllers
         [SwaggerResponse(400, "Неверный формат ID (отрицательное или нулевое значение)")]
         [SwaggerResponse(404, "Пост с указанным ID не найден")]
         [SwaggerResponse(500, "Внутренняя ошибка сервера")]
+        [Authorize(Policy = "UserEdit")]
         [HttpDelete("{id}")]
         public async Task<ActionResult> DeletePost(int id, CancellationToken token = default)
         {
@@ -71,6 +76,7 @@ namespace BackendService.API.Controllers
         [SwaggerResponse(200, "Пост успешно создан", typeof(PostEditDTO))]
         [SwaggerResponse(400, "Неверные данные поста")]
         [SwaggerResponse(500, "Внутренняя ошибка сервера")]
+        [Authorize(Policy = "UserEdit")]
         [HttpPost]
         public async Task<ActionResult<PostEditDTO>> CreatePost(PostEditDTO post, CancellationToken token = default)
         {
@@ -88,6 +94,7 @@ namespace BackendService.API.Controllers
         [SwaggerResponse(400, "Неверный формат ID (отрицательное или нулевое значение)")]
         [SwaggerResponse(404, "Пост с указанным ID не найден")]
         [SwaggerResponse(500, "Внутренняя ошибка сервера")]
+        [Authorize(Policy = "UserEdit")]
         [HttpPut]
         public async Task<ActionResult<PostEditDTO>> UpdatePost(PostEditDTO post, CancellationToken token = default)
         {
@@ -105,11 +112,12 @@ namespace BackendService.API.Controllers
         [SwaggerResponse(400, "Неверный формат ID (отрицательное или нулевое значение)")]
         [SwaggerResponse(404, "Пост с указанным ID не найден")]
         [SwaggerResponse(500, "Внутренняя ошибка сервера")]
+        [Authorize(Policy = "UserRead")]
         [HttpGet("images_list")]
         public async Task<ActionResult> GetPostImages(int postId, CancellationToken token = default)
         {
             var images = await _imageLogic.GetPostImages(postId, token);
-            
+
             return Ok(images);
         }
 
@@ -124,6 +132,7 @@ namespace BackendService.API.Controllers
         [SwaggerResponse(400, "Неверный формат ID (отрицательное или нулевое значение)")]
         [SwaggerResponse(404, "Картинка с указанным ID не найдена")]
         [SwaggerResponse(500, "Внутренняя ошибка сервера")]
+        [Authorize(Policy = "UserEdit")]
         [HttpDelete("image_{id}")]
         public async Task<ActionResult> DeleteImage(int id, CancellationToken token = default)
         {
@@ -142,6 +151,7 @@ namespace BackendService.API.Controllers
         [SwaggerResponse(200, "Картинка успешно загружена")]
         [SwaggerResponse(400, "Неверные данные")]
         [SwaggerResponse(500, "Внутренняя ошибка сервера")]
+        [Authorize(Policy = "UserEdit")]
         [HttpPost("image")]
         public async Task<ActionResult<int>> CreateImage(IFormFile image, int postId, CancellationToken token = default)
         {

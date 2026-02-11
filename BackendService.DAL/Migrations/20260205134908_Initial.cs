@@ -7,7 +7,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace BackendService.DAL.Migrations
 {
     /// <inheritdoc />
-    public partial class initial : Migration
+    public partial class Initial : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -18,9 +18,10 @@ namespace BackendService.DAL.Migrations
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Title = table.Column<string>(type: "text", nullable: false),
                     TextPost = table.Column<string>(type: "text", nullable: false),
-                    DataCreate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    DataUpdate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    DateCreate = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    DateUpdate = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
                     Deleted = table.Column<bool>(type: "boolean", nullable: false)
                 },
                 constraints: table =>
@@ -35,11 +36,33 @@ namespace BackendService.DAL.Migrations
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     Name = table.Column<string>(type: "text", nullable: false),
+                    DateCreate = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
                     Deleted = table.Column<bool>(type: "boolean", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Tags", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Images",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Data = table.Column<byte[]>(type: "bytea", nullable: false),
+                    Deleted = table.Column<bool>(type: "boolean", nullable: false),
+                    PostId = table.Column<int>(type: "integer", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Images", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Images_Posts_PostId",
+                        column: x => x.PostId,
+                        principalTable: "Posts",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -67,6 +90,11 @@ namespace BackendService.DAL.Migrations
                 });
 
             migrationBuilder.CreateIndex(
+                name: "IX_Images_PostId",
+                table: "Images",
+                column: "PostId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_PostTags_TagsId",
                 table: "PostTags",
                 column: "TagsId");
@@ -81,6 +109,9 @@ namespace BackendService.DAL.Migrations
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.DropTable(
+                name: "Images");
+
             migrationBuilder.DropTable(
                 name: "PostTags");
 
