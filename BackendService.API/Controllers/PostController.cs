@@ -1,5 +1,6 @@
 ﻿using BackendService.BLL.Interfaces;
 using BackendService.Common.DTO;
+using BackendService.Common.Exceptions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
@@ -32,7 +33,7 @@ namespace BackendService.API.Controllers
         /// <summary>
         /// Получение поста по идентификатору
         /// </summary>
-        /// <param name="id">идентификатор поста</param>
+        /// <param name="postId">идентификатор поста</param>
         /// <param name="token">токен отмены</param>
         /// <returns>пост</returns>
         [SwaggerOperation(Summary = "Получение поста", Description = "Возвращает пост по его идентификатору из базы данных")]
@@ -42,15 +43,15 @@ namespace BackendService.API.Controllers
         [SwaggerResponse(500, "Внутренняя ошибка сервера")]
         [Authorize(Policy = "UserRead")]
         [HttpGet("{id}")]
-        public async Task<ActionResult<PostDTO>> GetPostById(int id, CancellationToken token = default)
+        public async Task<ActionResult<PostDTO>> GetPostById(int postId, CancellationToken token = default)
         {
-            return Ok(await _postLogic.GetPostById(id, token));
+            return Ok(await _postLogic.GetPostById(postId, token));
         }
 
         /// <summary>
         /// Удаление поста
         /// </summary>
-        /// <param name="id">идентификатор поста</param>
+        /// <param name="postId">идентификатор поста</param>
         /// <param name="token">токен отмены</param>
         /// <returns>пустой ответ со статусом 204 в случае успеха</returns>
         [SwaggerOperation(Summary = "Удаление поста", Description = "Удаляет пост по его идентификатору из базы данных")]
@@ -60,9 +61,10 @@ namespace BackendService.API.Controllers
         [SwaggerResponse(500, "Внутренняя ошибка сервера")]
         [Authorize(Policy = "UserEdit")]
         [HttpDelete("{id}")]
-        public async Task<ActionResult> DeletePost(int id, CancellationToken token = default)
+        public async Task<ActionResult> DeletePost(int postId, CancellationToken token = default)
         {
-            await _postLogic.DeletePost(id, token);
+            var userId = HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier) ?? throw new ForbiddenException("User ID не найден в claims");
+            await _postLogic.DeletePost(postId, Guid.Parse(userId), token);
             return NoContent();
         }
 
@@ -80,7 +82,8 @@ namespace BackendService.API.Controllers
         [HttpPost]
         public async Task<ActionResult<PostEditDTO>> CreatePost(PostEditDTO post, CancellationToken token = default)
         {
-            return Ok(await _postLogic.SavePost(post, token));
+            var userId = HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier) ?? throw new ForbiddenException("User ID не найден в claims");
+            return Ok(await _postLogic.SavePost(post, Guid.Parse(userId), token));
         }
 
         /// <summary>
@@ -98,7 +101,8 @@ namespace BackendService.API.Controllers
         [HttpPut]
         public async Task<ActionResult<PostEditDTO>> UpdatePost(PostEditDTO post, CancellationToken token = default)
         {
-            return Ok(await _postLogic.SavePost(post, token));
+            var userId = HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier) ?? throw new ForbiddenException("User ID не найден в claims");
+            return Ok(await _postLogic.SavePost(post, Guid.Parse(userId), token));
         }
 
         /// <summary>
@@ -124,7 +128,7 @@ namespace BackendService.API.Controllers
         /// <summary>
         /// Удаление картинки
         /// </summary>
-        /// <param name="id">идентификатор картинки</param>
+        /// <param name="imageId">идентификатор картинки</param>
         /// <param name="token">токен отмены</param>
         /// <returns>пустой ответ со статусом 204 в случае успеха</returns>
         [SwaggerOperation(Summary = "Удаление картинки", Description = "Удаляет картинку по её идентификатору из базы данных")]
@@ -134,9 +138,10 @@ namespace BackendService.API.Controllers
         [SwaggerResponse(500, "Внутренняя ошибка сервера")]
         [Authorize(Policy = "UserEdit")]
         [HttpDelete("image_{id}")]
-        public async Task<ActionResult> DeleteImage(int id, CancellationToken token = default)
+        public async Task<ActionResult> DeleteImage(int imageId, CancellationToken token = default)
         {
-            await _imageLogic.DeleteImage(id, token);
+            var userId = HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier) ?? throw new ForbiddenException("User ID не найден в claims");
+            await _imageLogic.DeleteImage(imageId, Guid.Parse(userId), token);
             return NoContent();
         }
 
@@ -155,7 +160,8 @@ namespace BackendService.API.Controllers
         [HttpPost("image")]
         public async Task<ActionResult<int>> CreateImage(IFormFile image, int postId, CancellationToken token = default)
         {
-            var result = await _imageLogic.SaveImage(image, postId, token);
+            var userId = HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier) ?? throw new ForbiddenException("User ID не найден в claims");
+            var result = await _imageLogic.SaveImage(image, postId, Guid.Parse(userId), token);
             return Ok(result);
         }
     }

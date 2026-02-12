@@ -13,26 +13,26 @@ namespace BackendService.BLL.Logics
             return await _tagRepository.GetTags(token);
         }
 
-        public async Task<TagEditDTO?> GetTagById(int id, CancellationToken token = default)
+        public async Task<TagEditDTO?> GetTagById(int tagId, CancellationToken token = default)
         {
-            if (id <= 0) throw new ValidationException("ID должен быть положительным целым числом");
+            if (tagId <= 0) throw new ValidationException("ID должен быть положительным целым числом");
 
-            var tag = await _tagRepository.GetTagById(id, token);
+            var tag = await _tagRepository.GetTagById(tagId, token);
 
-            return tag is null ? throw new NotFoundException($"Тег с ID {id} не найден") : tag;
+            return tag is null ? throw new NotFoundException($"Тег с ID {tagId} не найден") : tag;
         }
 
-        public async Task DeleteTag(int id, CancellationToken token = default)
+        public async Task DeleteTag(int tagId, CancellationToken token = default)
         {
-            if (id <= 0) throw new ValidationException("ID должен быть положительным целым числом");
+            if (tagId <= 0) throw new ValidationException("ID должен быть положительным целым числом");
 
             try
             {
-                await _tagRepository.DeleteTag(id, token);
+                await _tagRepository.DeleteTag(tagId, token);
             }
             catch (InvalidOperationException)
             {
-                throw new NotFoundException($"Тег с ID {id} не найден и не может быть удалён");
+                throw new NotFoundException($"Тег с ID {tagId} не найден и не может быть удалён");
             }
         }
 

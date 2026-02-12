@@ -16,14 +16,14 @@ namespace BackendService.DAL.Repositories
             return await _mapper.ProjectTo<TagEditDTO>(_dbContext.Set<TagEntity>()).ToListAsync(token);
         }
 
-        public async Task<TagEditDTO?> GetTagById(int id, CancellationToken token = default)
+        public async Task<TagEditDTO?> GetTagById(int tagId, CancellationToken token = default)
         {
-            return await _mapper.ProjectTo<TagEditDTO>(_dbContext.Set<TagEntity>()).FirstOrDefaultAsync(c => c.Id == id, token);
+            return await _mapper.ProjectTo<TagEditDTO>(_dbContext.Set<TagEntity>()).FirstOrDefaultAsync(c => c.Id == tagId, token);
         }
 
-        public async Task DeleteTag(int id, CancellationToken token = default)
+        public async Task DeleteTag(int tagId, CancellationToken token = default)
         {
-            var postEntity = await _dbContext.Tags.Include(p => p.Posts).FirstAsync(p => p.Id == id, token);
+            var postEntity = await _dbContext.Tags.Include(p => p.Posts).FirstAsync(p => p.Id == tagId, token);
             postEntity.Posts.Clear();
             postEntity.Deleted = true;
             await _dbContext.SaveChangesAsync(token);

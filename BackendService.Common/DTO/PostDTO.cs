@@ -16,6 +16,7 @@
         public DateTime? DateUpdate { get; set; } = null;
 
         public HashSet<int> Tags { get; set; } = [];
+
         public HashSet<int> Images { get; set; } = [];
     }
 }

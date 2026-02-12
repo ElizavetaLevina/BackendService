@@ -16,9 +16,9 @@ namespace BackendService.DAL.Repositories
             return await _mapper.ProjectTo<ImageViewDTO>(_dbContext.Set<ImageEntity>().Where(c => c.PostId == postId && c.Deleted == false).OrderBy(c => c.Id)).ToListAsync(token);
         }
 
-        public async Task DeleteImage(int id, CancellationToken token = default)
+        public async Task DeleteImage(int imageId, CancellationToken token = default)
         {
-            var image = await _dbContext.Images.FirstAsync(c => c.Id == id, token);
+            var image = await _dbContext.Images.FirstAsync(c => c.Id == imageId, token);
             image.Deleted = true;
             await _dbContext.SaveChangesAsync(token);
         }        
@@ -30,6 +30,11 @@ namespace BackendService.DAL.Repositories
             _dbContext.Add(imageEntity);
             await _dbContext.SaveChangesAsync(token);
             return imageEntity.Id;
+        }
+
+        public async Task<int> GetPostIdByImageId(int imageId, CancellationToken token = default)
+        {
+            return (await _dbContext.Set<ImageEntity>().FirstAsync(c => c.Id == imageId, token)).PostId;
         }
     }
 }

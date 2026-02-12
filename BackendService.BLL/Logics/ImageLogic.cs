@@ -5,9 +5,10 @@ using Microsoft.AspNetCore.Http;
 
 namespace BackendService.BLL.Logics
 {
-    public class ImageLogic(IImageRepository imageRepository) : IImageLogic
+    public class ImageLogic(IImageRepository imageRepository, IPostRepository postRepository) : IImageLogic
     {
         readonly IImageRepository _imageRepository = imageRepository;
+        readonly IPostRepository _postRepository = postRepository;
 
         public async Task<List<ImageViewDTO>> GetPostImages(int postId, CancellationToken token = default)
         {
@@ -18,22 +19,27 @@ namespace BackendService.BLL.Logics
             return images is null ? throw new NotFoundException($"Пост с ID {postId} не найден") : images;
         }
 
-        public async Task DeleteImage(int id, CancellationToken token = default)
+        public async Task DeleteImage(int imageId, Guid userId, CancellationToken token = default)
         {
-            if (id <= 0) throw new ValidationException("ID должен быть положительным целым числом");
+            var postId = await _imageRepository.GetPostIdByImageId(imageId, token);
+            if (await IsPostOwner(postId, userId, token) == false) throw new ForbiddenException("Недостаточно прав для удаления картинки");
+
+            if (imageId <= 0) throw new ValidationException("ID должен быть положительным целым числом");
 
             try
             {
-                await _imageRepository.DeleteImage(id, token);
+                await _imageRepository.DeleteImage(imageId, token);
             }
             catch (InvalidOperationException)
             {
-                throw new NotFoundException($"Картинка с ID {id} не найдена и не может быть удалена");
+                throw new NotFoundException($"Картинка с ID {imageId} не найдена и не может быть удалена");
             }
         }
 
-        public async Task<int> SaveImage(IFormFile image, int postId, CancellationToken token = default)
+        public async Task<int> SaveImage(IFormFile image, int postId, Guid userId, CancellationToken token = default)
         {
+            if (await IsPostOwner(postId, userId, token) == false) throw new ForbiddenException("Недостаточно прав для добавления картинки");
+
             if (image is null || image.Length == 0) throw new ValidationException("Файл не выбран");
 
             if (image.Length > 10 * 1024 * 1024) throw new ValidationException("Файл не должен превышать 10MB");
@@ -56,6 +62,12 @@ namespace BackendService.BLL.Logics
             {
                 throw new NotFoundException($"Пост с ID {postId} не найден");
             }
+        }
+
+        public async Task<bool> IsPostOwner(int postId, Guid userId, CancellationToken token = default)
+        {
+            var userIdInPost = await _postRepository.GetUserIdByPostId(postId, token);
+            return userId == userIdInPost;
         }
     }
 }

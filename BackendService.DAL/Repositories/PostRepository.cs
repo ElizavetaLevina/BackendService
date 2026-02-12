@@ -15,21 +15,21 @@ namespace BackendService.DAL.Repositories
             return await _mapper.ProjectTo<PostDTO>(_dbContext.Set<PostEntity>().Where(c => c.Deleted == false).OrderBy(p => p.Id)).ToListAsync(token);
         }
 
-        public async Task<PostDTO?> GetPostById(int id, CancellationToken token = default)
+        public async Task<PostDTO?> GetPostById(int postId, CancellationToken token = default)
         {
-            return await _mapper.ProjectTo<PostDTO>(_dbContext.Set<PostEntity>()).FirstOrDefaultAsync(c => c.Id == id, token);
+            return await _mapper.ProjectTo<PostDTO>(_dbContext.Set<PostEntity>()).FirstOrDefaultAsync(c => c.Id == postId, token);
         }
 
-        public async Task DeletePost(int id, CancellationToken token = default)
+        public async Task DeletePost(int postId, CancellationToken token = default)
         {
-            var postEntity = await _dbContext.Posts.Include(p => p.Tags).Include(p => p.Images).FirstAsync(p => p.Id == id, token);
+            var postEntity = await _dbContext.Posts.Include(p => p.Tags).Include(p => p.Images).FirstAsync(p => p.Id == postId, token);
             postEntity.Tags.Clear();
             postEntity.Images?.Clear();
             postEntity.Deleted = true;
             await _dbContext.SaveChangesAsync(token);
         }
 
-        public async Task<PostEditDTO> SavePost(PostEditDTO post, CancellationToken token = default)
+        public async Task<PostEditDTO> SavePost(PostEditDTO post, Guid userId, CancellationToken token = default)
         {
             PostEntity postEntity;
 
@@ -45,6 +45,7 @@ namespace BackendService.DAL.Repositories
             {
                 postEntity = _mapper.Map<PostEntity>(post);
                 postEntity.DateCreate = DateTime.Now;
+                postEntity.UserId = userId;
                 postEntity.Tags = await _dbContext.Tags.Where(c => post.Tags.Contains(c.Id)).ToListAsync(token);
 
                 _dbContext.Posts.Add(postEntity);
@@ -52,6 +53,11 @@ namespace BackendService.DAL.Repositories
 
             await _dbContext.SaveChangesAsync(token);
             return _mapper.Map<PostEditDTO>(postEntity);
-        } 
+        }
+
+        public async Task<Guid?> GetUserIdByPostId(int postId, CancellationToken token = default)
+        {
+            return (await _dbContext.Set<PostEntity>().FirstOrDefaultAsync(c => c.Id == postId, token))?.UserId;
+        }
     }
 }

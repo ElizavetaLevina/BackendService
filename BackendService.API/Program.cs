@@ -39,6 +39,11 @@ namespace BackendService.API
                 {
                     c.RequireRealmRoles("user").RequireResourceRoles("edit");
                 });
+
+                options.AddPolicy("Admin", c =>
+                {
+                    c.RequireRealmRoles("admin");
+                });
             }).AddKeycloakAuthorization(builder.Configuration);
 
             builder.Services.AddSwaggerGen(options =>

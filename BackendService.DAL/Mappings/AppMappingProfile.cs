@@ -13,6 +13,7 @@ namespace BackendService.DAL.Mappings
                 .ForMember(s => s.Images, d => d.MapFrom(c => c.Images.Where(i => i.Deleted == false).Select(i => i.Id).ToHashSet()));
 
             CreateMap<PostEditDTO, PostEntity>()
+                .ForMember(s => s.UserId, d => d.Ignore())
                 .ForMember(s => s.Tags, d => d.Ignore())
                 .ForMember(s => s.Images, d => d.Ignore())
                 .ForMember(s => s.DateCreate, d => d.Ignore())

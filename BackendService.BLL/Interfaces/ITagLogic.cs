@@ -13,16 +13,16 @@ namespace BackendService.BLL.Interfaces
         /// <summary>
         /// Получение тега по идентификатору
         /// </summary>
-        /// <param name="id">идентификатор тега</param>
+        /// <param name="tagId">идентификатор тега</param>
         /// <returns></returns>
-        Task<TagEditDTO?> GetTagById(int id, CancellationToken token = default);
+        Task<TagEditDTO?> GetTagById(int tagId, CancellationToken token = default);
 
         /// <summary>
         /// Удаление тега
         /// </summary>
-        /// <param name="id">идентификатор тега</param>
+        /// <param name="tagId">идентификатор тега</param>
         /// <returns>задача удаления</returns>
-        Task DeleteTag(int id, CancellationToken token = default);
+        Task DeleteTag(int tagId, CancellationToken token = default);
 
         /// <summary>
         /// Сохранение тега

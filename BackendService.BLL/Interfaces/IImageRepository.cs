@@ -10,15 +10,15 @@ namespace BackendService.BLL.Interfaces
         /// <param name="postId">id поста</param>
         /// <param name="token">токен отмены</param>
         /// <returns>список картинок</returns>
-        public Task<List<ImageViewDTO>> GetPostImages(int postId, CancellationToken token = default);
+        Task<List<ImageViewDTO>> GetPostImages(int postId, CancellationToken token = default);
 
         /// <summary>
         /// Удаление картинки
         /// </summary>
-        /// <param name="id">id картинки</param>
+        /// <param name="tagId">id картинки</param>
         /// <param name="token">токен отмены</param>
         /// <returns>задача удаления</returns>
-        public Task DeleteImage(int id, CancellationToken token = default);
+        Task DeleteImage(int tagId, CancellationToken token = default);
 
         /// <summary>
         /// Сохранение картинки
@@ -27,6 +27,14 @@ namespace BackendService.BLL.Interfaces
         /// <param name="postId">идентификатор поста</param>
         /// <param name="token">токен отмены</param>
         /// <returns>id сохранённой картинки</returns>
-        public Task<int> SaveImage(byte[] data, int postId, CancellationToken token = default);
+        Task<int> SaveImage(byte[] data, int postId, CancellationToken token = default);
+
+        /// <summary>
+        /// Возвращает идентификатор поста, которому принадлежит картинка
+        /// </summary>
+        /// <param name="imageId">идентификатор картинки</param>
+        /// <param name="token">токен отмены</param>
+        /// <returns>идентификатор поста</returns>
+        Task<int> GetPostIdByImageId(int imageId, CancellationToken token = default);
     }
 }

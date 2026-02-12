@@ -16,6 +16,8 @@ namespace BackendService.DAL.Models
 
         public bool Deleted { get; set; } = false;
 
+        public Guid UserId { get; set; }
+
         public ICollection<TagEntity> Tags { get; set; } = [];
 
         public ICollection<ImageEntity>? Images { get; set; } = null;
