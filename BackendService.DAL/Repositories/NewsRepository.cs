@@ -5,15 +5,11 @@ using System.Text.Json;
 
 namespace BackendService.DAL.Repositories
 {
-    public class NewsRepository(string apiKey, string baseUrl) : INewsRepository
+    public class NewsRepository(string apiKey, string baseUrl, HttpClient httpClient) : INewsRepository
     {
         private readonly string _apiKey = apiKey;
         private readonly string _baseUrl = baseUrl;
-        private readonly HttpClient _httpClient = new()
-        {
-            DefaultRequestHeaders = { { "User-Agent", "BackendService/1.0" } }
-        };
-
+        private readonly HttpClient _httpClient = httpClient;
 
         public async Task<NewsApiResponseDTO> GetTopHeadlines(TopHeadlinesSourceDTO topHeadlines, CancellationToken token = default)
         {

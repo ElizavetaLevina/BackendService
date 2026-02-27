@@ -39,7 +39,7 @@ namespace BackendService.API.Controllers
         [SwaggerResponse(404, "Тег с указанным ID не найден")]
         [SwaggerResponse(500, "Внутренняя ошибка сервера")]
         [Authorize(Policy = "UserRead")]
-        [HttpGet("{id}")]
+        [HttpGet("{tagId}")]
         public async Task<ActionResult<TagEditDTO>> GetTagById(int tagId, CancellationToken token = default)
         {
             return Ok(await _tagLogic.GetTagById(tagId, token));
@@ -57,7 +57,7 @@ namespace BackendService.API.Controllers
         [SwaggerResponse(204, "Тег успешно удалён")]
         [SwaggerResponse(500, "Внутренняя ошибка сервера")]
         [Authorize(Policy = "Admin")]
-        [HttpDelete("{id}")]
+        [HttpDelete("{tagId}")]
         public async Task<ActionResult> DeleteTag(int tagIid, CancellationToken token = default)
         {
             await _tagLogic.DeleteTag(tagIid, token);

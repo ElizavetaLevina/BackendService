@@ -42,7 +42,7 @@ namespace BackendService.API.Controllers
         [SwaggerResponse(200, "Успешный ответ", typeof(PostDTO))]
         [SwaggerResponse(500, "Внутренняя ошибка сервера")]
         [Authorize(Policy = "UserRead")]
-        [HttpGet("{id}")]
+        [HttpGet("{postId}")]
         public async Task<ActionResult<PostDTO>> GetPostById(int postId, CancellationToken token = default)
         {
             return Ok(await _postLogic.GetPostById(postId, token));
@@ -60,7 +60,7 @@ namespace BackendService.API.Controllers
         [SwaggerResponse(404, "Пост с указанным ID не найден")]
         [SwaggerResponse(500, "Внутренняя ошибка сервера")]
         [Authorize(Policy = "UserEdit")]
-        [HttpDelete("{id}")]
+        [HttpDelete("{postId}")]
         public async Task<ActionResult> DeletePost(int postId, CancellationToken token = default)
         {
             var userId = HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier) ?? throw new ForbiddenException("User ID не найден в claims");
@@ -112,13 +112,13 @@ namespace BackendService.API.Controllers
         /// <param name="token">токен отмены</param>
         /// <returns>список с данными картинок</returns>
         [SwaggerOperation(Summary = "Получение списка картинок для поста", Description = "Возвращает список картинок для поста по его идентификатору из базы данных")]
-        [SwaggerResponse(200, "Успешный ответ")]
+        [SwaggerResponse(200, "Успешный ответ", typeof(IReadOnlyList<ImageViewDTO>))]
         [SwaggerResponse(400, "Неверный формат ID (отрицательное или нулевое значение)")]
         [SwaggerResponse(404, "Пост с указанным ID не найден")]
         [SwaggerResponse(500, "Внутренняя ошибка сервера")]
         [Authorize(Policy = "UserRead")]
-        [HttpGet("images_list")]
-        public async Task<ActionResult> GetPostImages(int postId, CancellationToken token = default)
+        [HttpGet("images/list")]
+        public async Task<ActionResult<IReadOnlyList<ImageViewDTO>>> GetPostImages(int postId, CancellationToken token = default)
         {
             var images = await _imageLogic.GetPostImages(postId, token);
 
@@ -137,7 +137,7 @@ namespace BackendService.API.Controllers
         [SwaggerResponse(404, "Картинка с указанным ID не найдена")]
         [SwaggerResponse(500, "Внутренняя ошибка сервера")]
         [Authorize(Policy = "UserEdit")]
-        [HttpDelete("image_{id}")]
+        [HttpDelete("image/{imageId}")]
         public async Task<ActionResult> DeleteImage(int imageId, CancellationToken token = default)
         {
             var userId = HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier) ?? throw new ForbiddenException("User ID не найден в claims");

@@ -4,13 +4,16 @@ using BackendService.BLL.Logics;
 using BackendService.DAL.Mappings;
 using BackendService.DAL.Models;
 using BackendService.DAL.Repositories;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging.Abstractions;
-using Microsoft.OpenApi.Models;
-using System.Reflection;
 using DotNetEnv;
 using Keycloak.AuthServices.Authentication;
 using Keycloak.AuthServices.Authorization;
+using Keycloak.Net.Models.Clients;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging.Abstractions;
+using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
+using System.Reflection;
 
 namespace BackendService.API
 {
@@ -26,7 +29,22 @@ namespace BackendService.API
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
 
-            builder.Services.AddKeycloakWebApiAuthentication(builder.Configuration);
+            builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+            .AddJwtBearer(options =>
+            {
+                options.Authority = "http://host.docker.internal:8090/realms/auth-dev";
+                options.RequireHttpsMetadata = false;
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuer = false,
+                    ValidateAudience = true,
+                    ValidAudiences = new[]  
+                    {
+                        "backend-service",
+                        "account"
+                    }
+                };
+            });
 
             builder.Services.AddAuthorization(options =>
             {
@@ -100,14 +118,22 @@ namespace BackendService.API
 
             Env.Load();
 
-            builder.Services.AddSingleton<INewsRepository, NewsRepository>(c =>
+            builder.Configuration.AddEnvironmentVariables();
+
+            var apiKey = Environment.GetEnvironmentVariable("API_KEY") ?? throw new InvalidOperationException("API_KEY не установлен");
+            var baseUrl = Environment.GetEnvironmentVariable("BASE_API_URL") ?? throw new InvalidOperationException("BASE_API_URL не установлен");
+
+            builder.Services.AddHttpClient("NewsApi", client =>
             {
-                var apiKey = Environment.GetEnvironmentVariable("API_KEY");
-                var baseUrl = Environment.GetEnvironmentVariable("BASE_API_URL");
-                return new NewsRepository(apiKey, baseUrl);
+                client.DefaultRequestHeaders.Add("User-Agent", "BackendService/1.0");
             });
 
-            builder.Configuration.AddEnvironmentVariables();
+            builder.Services.AddSingleton<INewsRepository>(sp =>
+            {
+                var factory = sp.GetRequiredService<IHttpClientFactory>();
+                var client = factory.CreateClient("NewsApi");
+                return new NewsRepository(apiKey, baseUrl, client);
+            });
 
             builder.Services.AddScoped<IPostRepository, PostRepository>();
             builder.Services.AddScoped<ITagRepository, TagRepository>();
@@ -138,18 +164,20 @@ namespace BackendService.API
                 app.UseSwaggerUI(options =>
                 {
                     options.SwaggerEndpoint("/swagger/v1/swagger.json", "BackendService.API v1");
-                    options.OAuthClientId("backend-service");
+                    options.OAuthClientId(builder.Configuration["Keycloak:resource"]);
                     options.OAuthClientSecret(builder.Configuration["Keycloak:credentials:secret"]);
                 });
             }
 
+            app.UseExceptionHandler();
+
             app.UseHttpsRedirection();
+
+            app.UseRouting();
 
             app.UseAuthentication();
 
             app.UseAuthorization();
-
-            app.UseExceptionHandler();
 
             app.MapControllers();
 
