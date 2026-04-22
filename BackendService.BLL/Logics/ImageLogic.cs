@@ -10,11 +10,11 @@ namespace BackendService.BLL.Logics
         readonly IImageRepository _imageRepository = imageRepository;
         readonly IPostRepository _postRepository = postRepository;
 
-        public async Task<List<ImageViewDTO>> GetPostImages(int postId, CancellationToken token = default)
+        public Task<List<ImageViewDTO>> GetPostImages(int postId, CancellationToken token = default)
         {
             if (postId <= 0) throw new ValidationException("ID должен быть положительным целым числом");
 
-            var images = await _imageRepository.GetPostImages(postId, token);
+            var images = _imageRepository.GetPostImages(postId, token);
 
             return images is null ? throw new NotFoundException($"Пост с ID {postId} не найден") : images;
         }

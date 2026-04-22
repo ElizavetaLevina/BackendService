@@ -12,6 +12,6 @@ namespace BackendService.DAL.Models
 
         public bool Deleted { get; set; } = false;
 
-        public ICollection<PostEntity> Posts { get; set; } = [];
+        public virtual ICollection<PostEntity> Posts { get; set; } = [];
     }
 }

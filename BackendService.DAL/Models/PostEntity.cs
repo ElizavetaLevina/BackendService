@@ -18,8 +18,8 @@ namespace BackendService.DAL.Models
 
         public Guid UserId { get; set; }
 
-        public ICollection<TagEntity> Tags { get; set; } = [];
+        public virtual ICollection<TagEntity> Tags { get; set; } = [];
 
-        public ICollection<ImageEntity>? Images { get; set; } = null;
+        public virtual ICollection<ImageEntity>? Images { get; set; } = null;
     }
 }

@@ -29,16 +29,18 @@ namespace BackendService.API
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
 
+            var isInDocker = Environment.GetEnvironmentVariable("DOTNET_RUNNING_IN_CONTAINER") == "true";
+
             builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             .AddJwtBearer(options =>
             {
-                options.Authority = "http://host.docker.internal:8090/realms/auth-dev";
+                options.Authority = isInDocker == true ? "http://host.docker.internal:8090/realms/auth-dev" : "http://localhost:8090/realms/auth-dev";
                 options.RequireHttpsMetadata = false;
                 options.TokenValidationParameters = new TokenValidationParameters
                 {
                     ValidateIssuer = false,
                     ValidateAudience = true,
-                    ValidAudiences = new[]  
+                    ValidAudiences = new[]
                     {
                         "backend-service",
                         "account"
@@ -110,10 +112,11 @@ namespace BackendService.API
                 options.EnableAnnotations();
             });
 
+            var connectionStringName = isInDocker == true ? nameof(ApplicationDbContext) : $"{nameof(ApplicationDbContext)}_Local";
             builder.Services.AddDbContext<ApplicationDbContext>(
                 option =>
                 {
-                    option.UseNpgsql(config.GetConnectionString(nameof(ApplicationDbContext)));
+                    option.UseNpgsql(config.GetConnectionString(connectionStringName));
                 });
 
             Env.Load();

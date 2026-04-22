@@ -48,7 +48,7 @@ namespace BackendService.API.Controllers
         /// <summary>
         /// Удаление тега
         /// </summary>
-        /// <param name="tagIid">идентификатор тега</param>
+        /// <param name="tagId">идентификатор тега</param>
         /// <param name="token">токен отмены</param>
         /// <returns>пустой ответ со статусом 204 в случае успеха</returns>
         [SwaggerOperation(Summary = "Удаление тега", Description = "Удаляет тег по его идентификатору из базы данных")]
@@ -58,9 +58,9 @@ namespace BackendService.API.Controllers
         [SwaggerResponse(500, "Внутренняя ошибка сервера")]
         [Authorize(Policy = "Admin")]
         [HttpDelete("{tagId}")]
-        public async Task<ActionResult> DeleteTag(int tagIid, CancellationToken token = default)
+        public async Task<ActionResult> DeleteTag(int tagId, CancellationToken token = default)
         {
-            await _tagLogic.DeleteTag(tagIid, token);
+            await _tagLogic.DeleteTag(tagId, token);
             return NoContent();
         }
 
