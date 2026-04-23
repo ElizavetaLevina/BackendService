@@ -15,10 +15,10 @@ namespace BackendService.BLL.Interfaces
         /// <summary>
         /// Удаление картинки
         /// </summary>
-        /// <param name="tagId">id картинки</param>
+        /// <param name="imageId">id картинки</param>
         /// <param name="token">токен отмены</param>
         /// <returns>задача удаления</returns>
-        Task DeleteImage(int tagId, CancellationToken token = default);
+        Task DeleteImage(int imageId, CancellationToken token = default);
 
         /// <summary>
         /// Сохранение картинки
@@ -35,6 +35,6 @@ namespace BackendService.BLL.Interfaces
         /// <param name="imageId">идентификатор картинки</param>
         /// <param name="token">токен отмены</param>
         /// <returns>идентификатор поста</returns>
-        Task<int> GetPostIdByImageId(int imageId, CancellationToken token = default);
+        Task<int?> GetPostIdByImageId(int imageId, CancellationToken token = default);
     }
 }

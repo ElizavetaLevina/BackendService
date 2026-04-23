@@ -21,19 +21,13 @@ namespace BackendService.BLL.Logics
 
         public async Task DeleteImage(int imageId, Guid userId, CancellationToken token = default)
         {
-            var postId = await _imageRepository.GetPostIdByImageId(imageId, token);
-            if (await IsPostOwner(postId, userId, token) == false) throw new ForbiddenException("Недостаточно прав для удаления картинки");
+            var postId = await _imageRepository.GetPostIdByImageId(imageId, token) ?? throw new NotFoundException($"Картинка с ID {imageId} не найдена и не может быть удалена");
+
+            if (await IsPostOwner((int)postId, userId, token) == false) throw new ForbiddenException("Недостаточно прав для удаления картинки");
 
             if (imageId <= 0) throw new ValidationException("ID должен быть положительным целым числом");
 
-            try
-            {
-                await _imageRepository.DeleteImage(imageId, token);
-            }
-            catch (InvalidOperationException)
-            {
-                throw new NotFoundException($"Картинка с ID {imageId} не найдена и не может быть удалена");
-            }
+            await _imageRepository.DeleteImage(imageId, token);
         }
 
         public async Task<int> SaveImage(IFormFile image, int postId, Guid userId, CancellationToken token = default)

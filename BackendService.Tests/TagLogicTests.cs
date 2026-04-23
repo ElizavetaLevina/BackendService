@@ -3,11 +3,6 @@ using BackendService.BLL.Logics;
 using BackendService.Common.DTO;
 using BackendService.Common.Exceptions;
 using Moq;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace BackendService.Tests
 {
@@ -54,7 +49,7 @@ namespace BackendService.Tests
         [InlineData(1000)]
         public async Task GetTagById_ValidId_ThrowsNotFoundException(int tagId)
         {
-            _tagRepository.Setup(c => c.GetTagById(tagId, It.IsAny<CancellationToken>())).ReturnsAsync((TagEditDTO)null);
+            _tagRepository.Setup(c => c.GetTagById(tagId, It.IsAny<CancellationToken>())).ReturnsAsync((TagEditDTO?)null);
 
             await Assert.ThrowsAsync<NotFoundException>(async() => await  _tagLogic.GetTagById(tagId));
 
@@ -63,7 +58,7 @@ namespace BackendService.Tests
 
         [Theory]
         [InlineData(1)]
-        public async Task DeleteTag_ValidId_DeleteTag(int tagId)
+        public async Task DeleteTag_ValidId_DeletesTag(int tagId)
         {
             _tagRepository.Setup(c => c.DeleteTag(tagId, It.IsAny<CancellationToken>())).Returns(Task.CompletedTask);
 

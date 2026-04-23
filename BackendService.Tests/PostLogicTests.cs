@@ -62,12 +62,12 @@ namespace BackendService.Tests
 
         [Theory]
         [InlineData(3, "11111111-1111-1111-1111-111111111111", "22222222-2222-2222-2222-222222222222")]
-        public async Task DeletePost_UserIsNotOwner_ThrowsForbiddenException(int postId, string userIdString, string ownerUserIdString)
+        public async Task DeletePost_UserIsNotOwner_ThrowsForbiddenException(int postId, string userIdString, string ownerIdString)
         {
             var userId = Guid.Parse(userIdString);
-            var ownerUserId = Guid.Parse(ownerUserIdString);
+            var ownerId = Guid.Parse(ownerIdString);
 
-            _postRepository.Setup(c => c.GetUserIdByPostId(postId, It.IsAny<CancellationToken>())).ReturnsAsync(ownerUserId);
+            _postRepository.Setup(c => c.GetUserIdByPostId(postId, It.IsAny<CancellationToken>())).ReturnsAsync(ownerId);
 
             await Assert.ThrowsAsync<ForbiddenException>(async () => await _postLogic.DeletePost(postId, userId));
 
@@ -78,7 +78,7 @@ namespace BackendService.Tests
         [Theory]
         [InlineData(1, "Test", "Test", "11111111-1111-1111-1111-111111111111", "11111111-1111-1111-1111-111111111111")]
         [InlineData(0, "Test", "Test", "22222222-2222-2222-2222-222222222222", null)]
-        public async Task SavePost_ValidPost_ReturnsSavedPost(int id, string title, string textPost, string userIdString, string? ownerUserIdString)
+        public async Task SavePost_ValidPost_ReturnsSavedPost(int id, string title, string textPost, string userIdString, string? ownerIdString)
         {
             var fakeDTO = new PostEditDTO { Id = id, Title = title, TextPost = textPost };
             var userId = Guid.Parse(userIdString);
@@ -86,7 +86,7 @@ namespace BackendService.Tests
             _postRepository.Setup(c => c.SavePost(fakeDTO, userId, It.IsAny<CancellationToken>())).ReturnsAsync(fakeDTO);
 
             if (id > 0)
-                _postRepository.Setup(c => c.GetUserIdByPostId(id, It.IsAny<CancellationToken>())).ReturnsAsync(Guid.Parse(ownerUserIdString));
+                _postRepository.Setup(c => c.GetUserIdByPostId(id, It.IsAny<CancellationToken>())).ReturnsAsync(Guid.Parse(ownerIdString));
 
             var result = await _postLogic.SavePost(fakeDTO, userId);
 

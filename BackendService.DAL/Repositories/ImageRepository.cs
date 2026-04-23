@@ -32,9 +32,9 @@ namespace BackendService.DAL.Repositories
             return imageEntity.Id;
         }
 
-        public async Task<int> GetPostIdByImageId(int imageId, CancellationToken token = default)
+        public async Task<int?> GetPostIdByImageId(int imageId, CancellationToken token = default)
         {
-            return (await _dbContext.Images.FirstAsync(c => c.Id == imageId, token)).PostId;
+            return (await _dbContext.Images.FirstOrDefaultAsync(c => c.Id == imageId, token))?.PostId;
         }
     }
 }
