@@ -4,7 +4,7 @@ using BackendService.Common.DTO;
 using BackendService.Common.Exceptions;
 using Moq;
 
-namespace BackendService.Tests
+namespace BackendService.Tests.Logics
 {
     public class TagLogicTests
     {

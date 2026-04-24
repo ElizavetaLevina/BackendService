@@ -5,7 +5,7 @@ using BackendService.Common.Exceptions;
 using Microsoft.AspNetCore.Http;
 using Moq;
 
-namespace BackendService.Tests
+namespace BackendService.Tests.Logics
 {
     public class ImageLogicTests
     {

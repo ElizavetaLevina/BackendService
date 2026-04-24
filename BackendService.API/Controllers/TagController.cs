@@ -71,7 +71,7 @@ namespace BackendService.API.Controllers
         /// <param name="token">токен отмены</param>
         /// <returns>созданный тег</returns>
         [SwaggerOperation(Summary = "Создание тега", Description = "Создаёт тег")]
-        [SwaggerResponse(200, "Тег успешно создан", typeof(PostDTO))]
+        [SwaggerResponse(200, "Тег успешно создан", typeof(TagEditDTO))]
         [SwaggerResponse(400, "Неверные данные тега")]
         [SwaggerResponse(500, "Внутренняя ошибка сервера")]
         [Authorize(Policy = "Admin")]
