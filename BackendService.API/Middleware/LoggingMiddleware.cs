@@ -5,7 +5,7 @@ using System.Diagnostics;
 using System.Text;
 using System.Text.Json;
 
-namespace BackendService.API
+namespace BackendService.API.Middleware
 {
     public class LoggingMiddleware(RequestDelegate next, ILogger<LoggingMiddleware> logger)
     {
