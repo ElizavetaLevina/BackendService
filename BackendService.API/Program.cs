@@ -1,4 +1,5 @@
 using AutoMapper;
+using BackendService.API.Utils;
 using BackendService.BLL.Interfaces;
 using BackendService.BLL.Logics;
 using BackendService.DAL.Mappings;
@@ -13,6 +14,9 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using Serilog;
+using Serilog.Debugging;
+using Serilog.Events;
 using System.Reflection;
 
 namespace BackendService.API
@@ -30,6 +34,27 @@ namespace BackendService.API
             builder.Services.AddEndpointsApiExplorer();
 
             var isInDocker = Environment.GetEnvironmentVariable("DOTNET_RUNNING_IN_CONTAINER") == "true";
+
+            if (isInDocker)
+            {
+                Log.Logger = new LoggerConfiguration()
+                    .WriteTo.Console()
+                    .WriteTo.File("/app/logs/log-.txt", rollingInterval: RollingInterval.Day)
+                    .MinimumLevel.Information()
+                    .MinimumLevel.Override("Microsoft.AspNetCore", LogEventLevel.Error)
+                    .MinimumLevel.Override("Microsoft.Extensions", LogEventLevel.Error)
+                   // .MinimumLevel.Override("Microsoft.Hosting.Lifetime", LogEventLevel.Error)
+                    .MinimumLevel.Override("System", LogEventLevel.Error)
+                    .CreateLogger();
+            }
+            else
+            {
+                Log.Logger = new LoggerConfiguration()
+                    .ReadFrom.Configuration(builder.Configuration)
+                    .CreateLogger();
+            }
+
+            builder.Host.UseSerilog();
 
             builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             .AddJwtBearer(options =>
@@ -173,6 +198,8 @@ namespace BackendService.API
             }
 
             app.UseExceptionHandler();
+
+            app.UseMiddleware<LoggingMiddleware>();
 
             app.UseHttpsRedirection();
 
