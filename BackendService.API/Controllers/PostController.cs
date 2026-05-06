@@ -10,10 +10,11 @@ namespace BackendService.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class PostController(IPostLogic postLogic, IImageLogic imageLogic) : ControllerBase
+    public class PostController(IPostLogic postLogic, IImageLogic imageLogic, IPostPendingLogic postPendingLogic) : ControllerBase
     {
         private readonly IPostLogic _postLogic = postLogic;
         private readonly IImageLogic _imageLogic = imageLogic;
+        private readonly IPostPendingLogic _postPendingLogic = postPendingLogic;
 
         /// <summary>
         /// Получение списка постов
@@ -27,6 +28,7 @@ namespace BackendService.API.Controllers
         [HttpGet("list")]
         public async Task<ActionResult<IReadOnlyList<PostDTO>>> GetPosts(CancellationToken token = default)
         {
+            //TODO добавить посты на модерации, которые принадлежат автору?
             return Ok(await _postLogic.GetPosts(token));
         }
 
@@ -75,15 +77,15 @@ namespace BackendService.API.Controllers
         /// <param name="token">токен отмены</param>
         /// <returns>созданный пост</returns>
         [SwaggerOperation(Summary = "Создание поста", Description = "Создаёт пост")]
-        [SwaggerResponse(200, "Пост успешно создан", typeof(PostEditDTO))]
+        [SwaggerResponse(200, "Пост успешно создан", typeof(PostPendingEditDTO))]
         [SwaggerResponse(400, "Неверные данные поста")]
         [SwaggerResponse(500, "Внутренняя ошибка сервера")]
         [Authorize(Policy = "UserEdit")]
         [HttpPost]
-        public async Task<ActionResult<PostEditDTO>> CreatePost(PostEditDTO post, CancellationToken token = default)
+        public async Task<ActionResult<PostPendingEditDTO>> CreatePost(PostPendingEditDTO post, CancellationToken token = default)
         {
             var userId = HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier) ?? throw new ForbiddenException("User ID не найден в claims");
-            return Ok(await _postLogic.SavePost(post, Guid.Parse(userId), token));
+            return Ok(await _postPendingLogic.SavePostPending(post, Guid.Parse(userId), token));
         }
 
         /// <summary>
@@ -93,16 +95,16 @@ namespace BackendService.API.Controllers
         /// <param name="token">токен отмены</param>
         /// <returns>обновлённый пост</returns>
         [SwaggerOperation(Summary = "Редактирование поста", Description = "Редактирует пост по его идентификатору в базе данных")]
-        [SwaggerResponse(200, "Успешный ответ", typeof(PostEditDTO))]
+        [SwaggerResponse(200, "Успешный ответ", typeof(PostPendingEditDTO))]
         [SwaggerResponse(400, "Неверный формат ID (отрицательное или нулевое значение)")]
         [SwaggerResponse(404, "Пост с указанным ID не найден")]
         [SwaggerResponse(500, "Внутренняя ошибка сервера")]
         [Authorize(Policy = "UserEdit")]
         [HttpPut]
-        public async Task<ActionResult<PostEditDTO>> UpdatePost(PostEditDTO post, CancellationToken token = default)
+        public async Task<ActionResult<PostPendingEditDTO>> UpdatePost(PostPendingEditDTO post, CancellationToken token = default)
         {
             var userId = HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier) ?? throw new ForbiddenException("User ID не найден в claims");
-            return Ok(await _postLogic.SavePost(post, Guid.Parse(userId), token));
+            return Ok(await _postPendingLogic.SavePostPending(post, Guid.Parse(userId), token));
         }
 
         /// <summary>

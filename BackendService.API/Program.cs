@@ -1,4 +1,5 @@
 using BackendService.API.Configurations;
+using BackendService.API.Middleware;
 
 namespace BackendService.API
 {
@@ -14,13 +15,14 @@ namespace BackendService.API
             builder.Services.AddControllers();
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
-           
+
             ConfigureServicesDatabase.ConfigureServices(builder.Services, config, isInDocker);
             ConfigureServicesLogger.ConfigureServices(builder, isInDocker);
             ConfigureServicesAutoMapper.ConfigureServices(builder.Services);
             ConfigureServicesLogic.ConfigureServices(builder.Services, config);
             ConfigureServicesAuthorization.ConfigureServices(builder.Services, config, isInDocker);
             ConfigureServicesSwagger.ConfigureServices(builder.Services, config);
+            ConfigureServicesRabbitMQ.ConfigureServices(builder.Services, config, isInDocker);
 
             var app = builder.Build();
 

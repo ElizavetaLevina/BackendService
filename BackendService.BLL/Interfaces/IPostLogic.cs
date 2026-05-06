@@ -28,16 +28,6 @@ namespace BackendService.BLL.Interfaces
         /// Сохранение поста
         /// </summary>
         /// <param name="post">пост</param>
-        /// <returns>сохранённый пост</returns>
-        Task<PostEditDTO> SavePost(PostEditDTO post, Guid userId, CancellationToken token = default);
-
-        /// <summary>
-        /// Проверяет, является ли указанный пользователь владельцем поста
-        /// </summary>
-        /// <param name="postId">идентификатор поста</param>
-        /// <param name="userId">идентификатор пользователя для проверки</param>
-        /// <param name="token">токен отмены</param>
-        /// <returns>результат проверки</returns>
-        Task<bool> IsPostOwner(int postId, Guid userId, CancellationToken token = default);
+        Task SavePost(PostEditDTO post, Guid userId, CancellationToken token = default);
     }
 }

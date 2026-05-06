@@ -29,7 +29,7 @@ namespace BackendService.DAL.Repositories
             await _dbContext.SaveChangesAsync(token);
         }
 
-        public async Task<PostEditDTO> SavePost(PostEditDTO post, Guid userId, CancellationToken token = default)
+        public async Task SavePost(PostEditDTO post, Guid userId, CancellationToken token = default)
         {
             PostEntity postEntity;
 
@@ -50,9 +50,6 @@ namespace BackendService.DAL.Repositories
 
                 _dbContext.Posts.Add(postEntity);
             }
-
-            await _dbContext.SaveChangesAsync(token);
-            return _mapper.Map<PostEditDTO>(postEntity);
         }
 
         public async Task<Guid?> GetUserIdByPostId(int postId, CancellationToken token = default)

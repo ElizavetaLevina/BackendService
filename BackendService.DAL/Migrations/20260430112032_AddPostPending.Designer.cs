@@ -3,6 +3,7 @@ using System;
 using BackendService.DAL.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace BackendService.DAL.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260430112032_AddPostPending")]
+    partial class AddPostPending
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -92,16 +95,12 @@ namespace BackendService.DAL.Migrations
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<DateTime>("DateCreate")
-                        .HasColumnType("timestamp without time zone");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<DateTime?>("DateModerate")
-                        .HasColumnType("timestamp without time zone");
+                        .HasColumnType("timestamp with time zone");
 
-                    b.PrimitiveCollection<int[]>("ImageIds")
-                        .IsRequired()
-                        .HasColumnType("integer[]");
-
-                    b.Property<int?>("PostId")
+                    b.Property<int>("PostId")
                         .HasColumnType("integer");
 
                     b.Property<string>("RejectionReason")
@@ -110,10 +109,6 @@ namespace BackendService.DAL.Migrations
                     b.Property<int>("Status")
                         .HasColumnType("integer");
 
-                    b.PrimitiveCollection<int[]>("TagIds")
-                        .IsRequired()
-                        .HasColumnType("integer[]");
-
                     b.Property<string>("TextPost")
                         .IsRequired()
                         .HasColumnType("text");
@@ -121,9 +116,6 @@ namespace BackendService.DAL.Migrations
                     b.Property<string>("Title")
                         .IsRequired()
                         .HasColumnType("text");
-
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uuid");
 
                     b.HasKey("Id");
 
@@ -189,7 +181,9 @@ namespace BackendService.DAL.Migrations
                 {
                     b.HasOne("BackendService.DAL.Models.PostEntity", null)
                         .WithOne("PendingVersion")
-                        .HasForeignKey("BackendService.DAL.Models.PostPendingEntity", "PostId");
+                        .HasForeignKey("BackendService.DAL.Models.PostPendingEntity", "PostId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("PostTags", b =>

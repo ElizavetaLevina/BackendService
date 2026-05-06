@@ -38,7 +38,7 @@ namespace BackendService.BLL.Logics
             }
         }
 
-        public async Task<PostEditDTO> SavePost(PostEditDTO post, Guid userId, CancellationToken token = default)
+        public async Task SavePost(PostEditDTO post, Guid userId, CancellationToken token = default)
         {
             if (post.Id < 0) throw new ValidationException("ID должен быть положительным целым числом");
 
@@ -46,7 +46,7 @@ namespace BackendService.BLL.Logics
 
             try
             {
-                return await _postRepository.SavePost(post, userId, token);
+                await _postRepository.SavePost(post, userId, token);
             }
             catch (InvalidOperationException)
             {
@@ -54,7 +54,14 @@ namespace BackendService.BLL.Logics
             }
         }
 
-        public async Task<bool> IsPostOwner(int postId, Guid userId, CancellationToken token = default)
+        /// <summary>
+        /// Проверяет, является ли указанный пользователь владельцем поста
+        /// </summary>
+        /// <param name="postId">Идентификатор поста</param>
+        /// <param name="userId">Идентификатор пользователя для проверки</param>
+        /// <param name="token">Токен отмены</param>
+        /// <returns>Результат проверки</returns>
+        private async Task<bool> IsPostOwner(int postId, Guid userId, CancellationToken token = default)
         {
             var userIdInPost = await _postRepository.GetUserIdByPostId(postId, token);
             return userIdInPost is null ? throw new NotFoundException($"Пост с ID {postId} не найден") : userId == userIdInPost;

@@ -33,8 +33,7 @@ namespace BackendService.BLL.Interfaces
         /// </summary>
         /// <param name="post">пост для сохранения</param>
         /// <param name="token">токен отмены</param>
-        /// <returns>сохранённый пост</returns>
-        Task<PostEditDTO> SavePost(PostEditDTO post, Guid userId, CancellationToken token = default);
+        Task SavePost(PostEditDTO post, Guid userId, CancellationToken token = default);
 
         /// <summary>
         /// Возвращает идентификатор владельца поста

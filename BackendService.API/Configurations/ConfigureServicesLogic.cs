@@ -2,6 +2,7 @@
 using BackendService.BLL.Interfaces;
 using BackendService.BLL.Logics;
 using BackendService.DAL.Repositories;
+using BackendService.DAL.UnitOfWork;
 using DotNetEnv;
 
 namespace BackendService.API.Configurations
@@ -46,11 +47,15 @@ namespace BackendService.API.Configurations
             services.AddScoped<IPostRepository, PostRepository>();
             services.AddScoped<ITagRepository, TagRepository>();
             services.AddScoped<IImageRepository, ImageRepository>();
+            services.AddScoped<IPostPendingRepository, PostPendingRepository>();
+
+            services.AddScoped<IUnitOfWork, UnitOfWork>();
 
             // Бизнес-логика
             services.AddScoped<IPostLogic, PostLogic>();
             services.AddScoped<ITagLogic, TagLogic>();
             services.AddScoped<IImageLogic, ImageLogic>();
+            services.AddScoped<IPostPendingLogic, PostPendingLogic>();
 
             // Глобальная обработка исключений
             services.AddExceptionHandler<GlobalExceptionHandler>();

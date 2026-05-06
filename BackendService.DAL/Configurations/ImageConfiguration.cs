@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace BackendService.DAL.Configurations
 {
-    public class ImageConfigurations : IEntityTypeConfiguration<ImageEntity>
+    public class ImageConfiguration : IEntityTypeConfiguration<ImageEntity>
     {
         public void Configure(EntityTypeBuilder<ImageEntity> builder)
         {
