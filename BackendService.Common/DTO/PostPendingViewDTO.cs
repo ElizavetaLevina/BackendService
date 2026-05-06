@@ -1,6 +1,6 @@
 ﻿namespace BackendService.Common.DTO
 {
-    public class PostPendingEditDTO
+    public class PostPendingViewDTO
     {
         /// <summary>
         /// Уникальный идентификатор
@@ -21,6 +21,21 @@
         /// Текст поста
         /// </summary>
         public string TextPost { get; set; } = string.Empty;
+
+        /// <summary>
+        /// Автор поста
+        /// </summary>
+        public Guid UserId { get; set; }
+
+        /// <summary>
+        /// Дата создания и отправки на модерацию
+        /// </summary>
+        public DateTime DateCreate { get; set; }
+
+        /// <summary>
+        /// Дата завершения модерации
+        /// </summary>
+        public DateTime? DateModerate { get; set; } = null;
 
         /// <summary>
         /// Множество идентификаторов тегов

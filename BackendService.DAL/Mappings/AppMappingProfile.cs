@@ -1,7 +1,9 @@
 ﻿using AutoMapper;
-using BackendService.DAL.Models;
+using AutoMapper.Execution;
 using BackendService.Common.DTO;
+using BackendService.DAL.Models;
 using Shared.Contracts.DTO;
+using System.Collections.Generic;
 
 namespace BackendService.DAL.Mappings
 {
@@ -33,23 +35,22 @@ namespace BackendService.DAL.Mappings
                 .ForMember(c => c.StringData, opt => opt.MapFrom(c => Convert.ToBase64String(c.Data)));
 
             CreateMap<PostPendingEditDTO, PostPendingEntity>()
+                .ForMember(d => d.Id, opt => opt.Ignore())
                 .ForMember(d => d.DateCreate, opt => opt.Ignore())
                 .ForMember(d => d.DateModerate, opt => opt.Ignore())
                 .ForMember(d => d.Status, opt => opt.Ignore())
-                .ForMember(d => d.RejectionReason, opt => opt.Ignore());
+                .ForMember(d => d.RejectionReason, opt => opt.Ignore())
+                .ForMember(d => d.UserId, opt => opt.Ignore());
 
             CreateMap<PostPendingEntity, PostPendingEditDTO>();
 
             CreateMap<PostPendingEditDTO, PostSubmittedForModeration>()
-                .ForMember(d => d.DateCreate, opt => opt.Ignore());
+                .ForMember(d => d.DateCreate, opt => opt.Ignore())
+                .ForMember(d => d.UserId, opt => opt.Ignore());
 
-            CreateMap<PostEditDTO, PostPendingEditDTO>()
-                .ForMember(d => d.PostId, opt => opt.MapFrom(c => c.Id))
-                .ForMember(d => d.UserId, opt => opt.Ignore())
-                .ForMember(d => d.TagIds, opt => opt.MapFrom(c => c.Tags))
-                .ForMember(d => d.ImageIds, opt => opt.MapFrom(c => c.Images));
+            CreateMap<PostPendingEntity, PostPendingViewDTO>();
 
-            CreateMap<PostPendingEditDTO, PostEditDTO>()
+            CreateMap<PostPendingViewDTO, PostEditDTO>()
                 .ForMember(d => d.Id, opt => opt.MapFrom(c => c.PostId))
                 .ForMember(d => d.Tags, opt => opt.MapFrom(c => c.TagIds))
                 .ForMember(d => d.Images, opt => opt.MapFrom(c => c.ImageIds));

@@ -13,15 +13,15 @@ namespace BackendService.DAL.Repositories
         private readonly ApplicationDbContext _dbContext = dbContext;
         private readonly IMapper _mapper = mapper;
 
-        public async Task<List<PostPendingEditDTO>> GetPostsPending(CancellationToken token = default)
+        public async Task<List<PostPendingViewDTO>> GetPostsPending(CancellationToken token = default)
         {
-            return await _mapper.ProjectTo<PostPendingEditDTO>(_dbContext.PostsPending).ToListAsync(token);
+            return await _mapper.ProjectTo<PostPendingViewDTO>(_dbContext.PostsPending).ToListAsync(token);
 
         }
 
-        public async Task<PostPendingEditDTO?> GetPostPendingById(int postPendingId, CancellationToken token = default)
+        public async Task<PostPendingViewDTO?> GetPostPendingById(int postPendingId, CancellationToken token = default)
         {
-            return await _mapper.ProjectTo<PostPendingEditDTO>(_dbContext.PostsPending).FirstOrDefaultAsync(c => c.Id == postPendingId, token);
+            return await _mapper.ProjectTo<PostPendingViewDTO>(_dbContext.PostsPending).FirstOrDefaultAsync(c => c.Id == postPendingId, token);
         }
 
         public async Task<StatusModerationEnum?> GetPostPendingStatus(int postPendingId, CancellationToken token = default)
@@ -39,21 +39,22 @@ namespace BackendService.DAL.Repositories
             _dbContext.PostsPending.Remove(await _dbContext.PostsPending.FirstAsync(c => c.Id == postPendingId, token));
         }
 
-        public async Task<PostPendingEditDTO> SavePostPending(PostPendingEditDTO postPending, CancellationToken token = default)
+        public async Task<PostPendingEditDTO> SavePostPending(PostPendingEditDTO postPending, Guid userId, CancellationToken token = default)
         {
             PostPendingEntity postPendingEntity;
 
             if (postPending.Id == 0)
             {
                 postPendingEntity = _mapper.Map<PostPendingEntity>(postPending);
+                postPendingEntity.UserId = userId;
                 _dbContext.PostsPending.Add(postPendingEntity);
             }
             else
             {
                 postPendingEntity = await _dbContext.PostsPending.FirstAsync(c => c.Id == postPending.Id, token);
-                postPendingEntity.RejectionReason = null;
+                _mapper.Map(postPending, postPendingEntity);
                 postPendingEntity.Status = StatusModerationEnum.Pending;
-                _dbContext.PostsPending.Update(postPendingEntity);
+                postPendingEntity.RejectionReason = null;
             }
             
             await _dbContext.SaveChangesAsync(token);

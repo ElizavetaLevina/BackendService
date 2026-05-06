@@ -5,7 +5,6 @@ using BackendService.Common.Exceptions;
 using MassTransit;
 using Shared.Contracts.DTO;
 using Shared.Contracts.Enum;
-using static MassTransit.MessageHeaders;
 
 namespace BackendService.BLL.Logics
 {
@@ -17,12 +16,12 @@ namespace BackendService.BLL.Logics
         private readonly IUnitOfWork _unitOfWork = unitOfWork;
         private readonly IMapper _mapper = mapper;
 
-        public async Task<List<PostPendingEditDTO>> GetPostsPending(CancellationToken token = default)
+        public async Task<List<PostPendingViewDTO>> GetPostsPending(CancellationToken token = default)
         {
             return await _postPendingRepository.GetPostsPending(token);
         }
 
-        public async Task<PostPendingEditDTO> GetPostPendingById(int postPendingId, CancellationToken token = default)
+        public async Task<PostPendingViewDTO> GetPostPendingById(int postPendingId, CancellationToken token = default)
         {
             if (postPendingId <= 0) throw new ValidationException("ID должен быть положительным целым числом");
 
@@ -57,7 +56,7 @@ namespace BackendService.BLL.Logics
 
             try
             {
-                var result =  await _postPendingRepository.SavePostPending(postPending, token);
+                var result =  await _postPendingRepository.SavePostPending(postPending, userId, token);
 
                 await _publishEndpoint.Publish(_mapper.Map<PostSubmittedForModeration>(result), token);
                 return result;

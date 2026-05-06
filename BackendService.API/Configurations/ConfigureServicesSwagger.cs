@@ -83,6 +83,8 @@ namespace BackendService.API.Configurations
                 options.SwaggerEndpoint("/swagger/v1/swagger.json", "BackendService.API v1");
                 options.OAuthClientId(configuration["Keycloak:resource"]);
                 options.OAuthClientSecret(configuration["Keycloak:credentials:secret"]);
+                options.OAuthUsePkce();
+                options.OAuthAppName("BackendService");
             });
         }
     }

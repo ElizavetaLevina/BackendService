@@ -11,7 +11,7 @@ namespace BackendService.BLL.Interfaces
         /// </summary>
         /// <param name="token">Токен отмены</param>
         /// <returns>Список постов</returns>
-        Task<List<PostPendingEditDTO>> GetPostsPending(CancellationToken token = default);
+        Task<List<PostPendingViewDTO>> GetPostsPending(CancellationToken token = default);
 
         /// <summary>
         /// Получение поста на модерации по идентификатору
@@ -19,7 +19,7 @@ namespace BackendService.BLL.Interfaces
         /// <param name="postId">Идентификатор поста на модерации</param>
         /// <param name="token">Токен отмены</param>
         /// <returns>Пост</returns>
-        Task<PostPendingEditDTO?> GetPostPendingById(int postPendingId, CancellationToken token = default);
+        Task<PostPendingViewDTO?> GetPostPendingById(int postPendingId, CancellationToken token = default);
 
         /// <summary>
         /// Получение статуса поста на модерации
@@ -49,9 +49,10 @@ namespace BackendService.BLL.Interfaces
         /// Добавление поста на модерацию
         /// </summary>
         /// <param name="postPending">Пост для добавления</param>
+        /// <param name="userId">Автор поста</param>
         /// <param name="token">Токен отмены</param>
         /// <returns>Добавленный пост</returns>
-        Task<PostPendingEditDTO> SavePostPending(PostPendingEditDTO postPending, CancellationToken token = default);
+        Task<PostPendingEditDTO> SavePostPending(PostPendingEditDTO postPending, Guid userId, CancellationToken token = default);
 
         /// <summary>
         /// Обновляет результат модерации поста на основе полученного события

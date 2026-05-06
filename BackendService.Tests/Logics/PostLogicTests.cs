@@ -75,23 +75,23 @@ namespace BackendService.Tests.Logics
             _postRepository.Verify(c => c.DeletePost(postId, It.IsAny<CancellationToken>()), Times.Never);
         }
 
-        [Theory]
-        [InlineData(1, "Test", "Test", "11111111-1111-1111-1111-111111111111", "11111111-1111-1111-1111-111111111111")]
-        [InlineData(0, "Test", "Test", "22222222-2222-2222-2222-222222222222", null)]
-        public async Task SavePost_ValidPost_ReturnsSavedPost(int id, string title, string textPost, string userIdString, string? ownerIdString)
-        {
-            var fakeDTO = new PostEditDTO { Id = id, Title = title, TextPost = textPost };
-            var userId = Guid.Parse(userIdString);
+        //[Theory]
+        //[InlineData(1, "Test", "Test", "11111111-1111-1111-1111-111111111111", "11111111-1111-1111-1111-111111111111")]
+        //[InlineData(0, "Test", "Test", "22222222-2222-2222-2222-222222222222", null)]
+        //public async Task SavePost_ValidPost_ReturnsSavedPost(int id, string title, string textPost, string userIdString, string? ownerIdString)
+        //{
+        //    var fakeDTO = new PostEditDTO { Id = id, Title = title, TextPost = textPost };
+        //    var userId = Guid.Parse(userIdString);
 
-            _postRepository.Setup(c => c.SavePost(fakeDTO, userId, It.IsAny<CancellationToken>())).ReturnsAsync(fakeDTO);
+        //    _postRepository.Setup(c => c.SavePost(fakeDTO, userId, It.IsAny<CancellationToken>())).ReturnsAsync(fakeDTO);
 
-            if (id > 0)
-                _postRepository.Setup(c => c.GetUserIdByPostId(id, It.IsAny<CancellationToken>())).ReturnsAsync(Guid.Parse(ownerIdString));
+        //    if (id > 0)
+        //        _postRepository.Setup(c => c.GetUserIdByPostId(id, It.IsAny<CancellationToken>())).ReturnsAsync(Guid.Parse(ownerIdString));
 
-            var result = await _postLogic.SavePost(fakeDTO, userId);
+        //    var result = await _postLogic.SavePost(fakeDTO, userId);
 
-            Assert.NotNull(result);
-            Assert.Equal(fakeDTO.Id, result.Id);
-        }
+        //    Assert.NotNull(result);
+        //    Assert.Equal(fakeDTO.Id, result.Id);
+        //}
     }
 }

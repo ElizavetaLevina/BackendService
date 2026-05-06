@@ -10,7 +10,7 @@ namespace BackendService.BLL.Interfaces
         /// </summary>
         /// <param name="token">Токен отмены</param>
         /// <returns>Список постов</returns>
-        Task<List<PostPendingEditDTO>> GetPostsPending(CancellationToken token = default);
+        Task<List<PostPendingViewDTO>> GetPostsPending(CancellationToken token = default);
 
         /// <summary>
         /// Получение поста на модерации по идентификатору
@@ -18,7 +18,7 @@ namespace BackendService.BLL.Interfaces
         /// <param name="postId">Идентификатор поста на модерации</param>
         /// <param name="token">Токен отмены</param>
         /// <returns><Пост/returns>
-        Task<PostPendingEditDTO> GetPostPendingById(int postId, CancellationToken token = default);
+        Task<PostPendingViewDTO> GetPostPendingById(int postId, CancellationToken token = default);
 
         /// <summary>
         /// Добавление поста на модерацию
