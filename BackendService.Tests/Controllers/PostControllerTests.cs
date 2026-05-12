@@ -1,6 +1,14 @@
-﻿using BackendService.Common.DTO;
+﻿using BackendService.BLL.Interfaces;
+using BackendService.Common.DTO;
+using BackendService.DAL.Models;
 using BackendService.Tests.Factories;
 using BackendService.Tests.Helpers;
+using MassTransit;
+using Microsoft.AspNetCore.Components.Forms;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
+using Shared.Contracts.DTO;
+using Shared.Contracts.Enum;
 using System.Net;
 using System.Net.Http.Headers;
 using System.Text;
@@ -12,10 +20,15 @@ namespace BackendService.Tests.Controllers
     public class PostControllerTests
     {
         private readonly HttpClient _client;
+        private readonly ApplicationDbContext _dbContext;
+        private readonly CustomWebApplicationFactory _factory;
+        private static readonly JsonSerializerOptions _jsonOptions = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
 
         public PostControllerTests(CustomWebApplicationFactory factory)
         {
             _client = factory.CreateClient();
+            _dbContext = factory._dbContext;
+            _factory = factory;
         }
 
         [Fact]
@@ -60,7 +73,7 @@ namespace BackendService.Tests.Controllers
             var token = await KeycloakTokenHelper.GetToken("user-re-test", "user-re-test-pass");
             _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
-            var post = new PostEditDTO
+            var post = new PostPendingEditDTO
             {
                 Title = "Test",
                 TextPost = "Test"
@@ -70,6 +83,78 @@ namespace BackendService.Tests.Controllers
 
             var response = await _client.PostAsync("api/Post", content);
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+
+            var result = JsonSerializer.Deserialize<PostPendingEditDTO>(await response.Content.ReadAsStringAsync(), _jsonOptions);
+            Assert.NotNull(result);
+            Assert.Null(result.PostId);
         }
+
+        [Fact]
+        public async Task RejectPost_StatusBecomesRejected()
+        {
+            var token = await KeycloakTokenHelper.GetToken("user-re-test", "user-re-test-pass");
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+            var post = new PostPendingEditDTO
+            {
+                Title = "Test",
+                TextPost = "Test"
+            };
+
+            var content = new StringContent(JsonSerializer.Serialize(post), Encoding.UTF8, "application/json");
+
+            var response = await _client.PostAsync("api/Post", content);
+            var created = JsonSerializer.Deserialize<PostPendingEditDTO>(await response.Content.ReadAsStringAsync(), _jsonOptions);
+            var pendingId = created.Id;
+
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+
+            using var scope = _factory.Services.CreateScope();
+            var logic = scope.ServiceProvider.GetRequiredService<IPostPendingLogic>();
+            var expEvent = new PostModeratedEvent { PendingId = pendingId, Status = StatusModerationEnum.Rejected, RejectionReason = "Test reason" };
+
+            await logic.RejectPost(expEvent);
+
+            var result = await _dbContext.PostsPending.FindAsync(pendingId);
+            Assert.NotNull(result);
+            Assert.Equal(StatusModerationEnum.Rejected, result.Status);
+        }
+
+        [Fact]
+        public async Task ApprovePost_DeletesPendingAndCreatesPost()
+        {
+            var token = await KeycloakTokenHelper.GetToken("user-re-test", "user-re-test-pass");
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+            var textPost = $"Test_{Guid.NewGuid()}";
+            var post = new PostPendingEditDTO
+            {
+                Title = "Test",
+                TextPost = textPost
+            };
+
+            var content = new StringContent(JsonSerializer.Serialize(post), Encoding.UTF8, "application/json");
+
+            var response = await _client.PostAsync("api/Post", content);
+            var created = JsonSerializer.Deserialize<PostPendingEditDTO>(await response.Content.ReadAsStringAsync(), _jsonOptions);
+            var pendingId = created.Id;
+
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+
+            using var scope = _factory.Services.CreateScope();
+            var logic = scope.ServiceProvider.GetRequiredService<IPostPendingLogic>();
+            var expEvent = new PostModeratedEvent { PendingId = pendingId, Status = StatusModerationEnum.Approved };
+
+            await logic.ApprovePost(pendingId);
+
+            var deletedPendingPost = await _dbContext.PostsPending.FindAsync(pendingId);
+            Assert.Null(deletedPendingPost);
+
+            var approvedPost = await _dbContext.Posts.FirstOrDefaultAsync(c => c.TextPost == textPost);
+            Assert.NotNull(approvedPost);
+            Assert.Equal(textPost, approvedPost.TextPost);
+            Assert.Equal("Test", approvedPost.Title);
+        }
+
     }
 }

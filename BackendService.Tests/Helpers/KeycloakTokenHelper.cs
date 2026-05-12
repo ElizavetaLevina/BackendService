@@ -1,11 +1,12 @@
-﻿using System.Text.Json;
+﻿using System.ComponentModel.DataAnnotations;
+using System.Text.Json;
 using System.Text.Json.Serialization;
 
 namespace BackendService.Tests.Helpers
 {
     public static class KeycloakTokenHelper
     {
-        private const string KeycloakUrl = "http://host.docker.internal:8090";
+        private const string KeycloakUrl = "http://localhost:8090";
         private const string Realm = "auth-dev";
         private const string ClientId = "backend-service";
         private const string ClientSecret = "hsHuglPJjFv20MJIkTkJTuw7GCosTlD3";
@@ -43,12 +44,12 @@ namespace BackendService.Tests.Helpers
     public class KeycloakTokenResponse
     {
         [JsonPropertyName("access_token")]
-        public string AccessToken { get; set; }
+        public required string AccessToken { get; set; }
 
         [JsonPropertyName("expires_in")]
         public int ExpiresIn { get; set; }
 
         [JsonPropertyName("refresh_token")]
-        public string RefreshToken { get; set; }
+        public required string RefreshToken { get; set; }
     }
 }
