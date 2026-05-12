@@ -28,7 +28,6 @@ namespace BackendService.API.Controllers
         [HttpGet("list")]
         public async Task<ActionResult<IReadOnlyList<PostDTO>>> GetPosts(CancellationToken token = default)
         {
-            //TODO добавить посты на модерации, которые принадлежат автору?
             return Ok(await _postLogic.GetPosts(token));
         }
 

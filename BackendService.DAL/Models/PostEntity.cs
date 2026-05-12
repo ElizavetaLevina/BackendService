@@ -57,7 +57,7 @@ namespace BackendService.DAL.Models
         /// <summary>
         /// Список картинок
         /// </summary>
-        public virtual ICollection<ImageEntity>? Images { get; set; } = null;
+        public virtual ICollection<ImageEntity> Images { get; set; } = [];
 
         /// <summary>
         /// Версия поста на модерации

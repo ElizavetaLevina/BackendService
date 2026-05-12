@@ -57,11 +57,11 @@ namespace BackendService.DAL.Models
         /// <summary>
         /// Множество идентификаторов тегов
         /// </summary>
-        public ICollection<int> TagIds { get; set; } = [];
+        public IList<int> TagIds { get; set; } = [];
 
         /// <summary>
         /// Множество идентификаторов картинок
         /// </summary>
-        public ICollection<int> ImageIds { get; set; } = [];
+        public IList<int> ImageIds { get; set; } = [];
     }
 }
