@@ -44,7 +44,7 @@ namespace BackendService.DAL.Migrations
 
                     b.HasIndex("PostId");
 
-                    b.ToTable("Images");
+                    b.ToTable("Images", (string)null);
                 });
 
             modelBuilder.Entity("BackendService.DAL.Models.PostEntity", b =>
@@ -80,7 +80,7 @@ namespace BackendService.DAL.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Posts");
+                    b.ToTable("Posts", (string)null);
                 });
 
             modelBuilder.Entity("BackendService.DAL.Models.PostPendingEntity", b =>
@@ -97,7 +97,7 @@ namespace BackendService.DAL.Migrations
                     b.Property<DateTime?>("DateModerate")
                         .HasColumnType("timestamp without time zone");
 
-                    b.PrimitiveCollection<int[]>("ImageIds")
+                    b.Property<int[]>("ImageIds")
                         .IsRequired()
                         .HasColumnType("integer[]");
 
@@ -110,7 +110,7 @@ namespace BackendService.DAL.Migrations
                     b.Property<int>("Status")
                         .HasColumnType("integer");
 
-                    b.PrimitiveCollection<int[]>("TagIds")
+                    b.Property<int[]>("TagIds")
                         .IsRequired()
                         .HasColumnType("integer[]");
 
@@ -130,7 +130,7 @@ namespace BackendService.DAL.Migrations
                     b.HasIndex("PostId")
                         .IsUnique();
 
-                    b.ToTable("PostsPending");
+                    b.ToTable("PostsPending", (string)null);
                 });
 
             modelBuilder.Entity("BackendService.DAL.Models.TagEntity", b =>
@@ -156,7 +156,7 @@ namespace BackendService.DAL.Migrations
                     b.HasIndex("Name")
                         .IsUnique();
 
-                    b.ToTable("Tags");
+                    b.ToTable("Tags", (string)null);
                 });
 
             modelBuilder.Entity("PostTags", b =>
@@ -171,7 +171,7 @@ namespace BackendService.DAL.Migrations
 
                     b.HasIndex("TagsId");
 
-                    b.ToTable("PostTags");
+                    b.ToTable("PostTags", (string)null);
                 });
 
             modelBuilder.Entity("BackendService.DAL.Models.ImageEntity", b =>

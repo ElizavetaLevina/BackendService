@@ -1,4 +1,5 @@
-﻿using BackendService.API.Utils;
+﻿using BackendService.API.HostedServices;
+using BackendService.API.Utils;
 using BackendService.BLL.Interfaces;
 using BackendService.BLL.Logics;
 using BackendService.DAL.Repositories;
@@ -43,6 +44,8 @@ namespace BackendService.API.Configurations
                 return new NewsRepository(apiKey, baseUrl, client);
             });
 
+            services.AddHostedService<PostPendingPublisherHostedService>();
+
             // Репозитории
             services.AddScoped<IPostRepository, PostRepository>();
             services.AddScoped<ITagRepository, TagRepository>();
@@ -56,9 +59,10 @@ namespace BackendService.API.Configurations
             services.AddScoped<ITagLogic, TagLogic>();
             services.AddScoped<IImageLogic, ImageLogic>();
             services.AddScoped<IPostPendingLogic, PostPendingLogic>();
+            services.AddScoped<IPostPendingPublisherLogic, PostPendingPublisherLogic>();
 
-            // Глобальная обработка исключений
-            services.AddExceptionHandler<GlobalExceptionHandler>();
+			// Глобальная обработка исключений
+			services.AddExceptionHandler<GlobalExceptionHandler>();
             services.AddProblemDetails();
         }
     }

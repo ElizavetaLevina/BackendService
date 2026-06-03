@@ -14,12 +14,19 @@ namespace BackendService.BLL.Interfaces
         Task<List<PostPendingViewDTO>> GetPostsPending(CancellationToken token = default);
 
         /// <summary>
-        /// Получение поста на модерации по идентификатору
+        /// Получение списка постов, не отправленных на модерацию
         /// </summary>
-        /// <param name="postId">Идентификатор поста на модерации</param>
         /// <param name="token">Токен отмены</param>
-        /// <returns>Пост</returns>
-        Task<PostPendingViewDTO?> GetPostPendingById(int postPendingId, CancellationToken token = default);
+        /// <returns>Список постов</returns>
+        Task<List<PostPendingEditDTO>> GetPostsPendingNotPublishedBatch(CancellationToken token = default);
+
+		/// <summary>
+		/// Получение поста на модерации по идентификатору
+		/// </summary>
+		/// <param name="postId">Идентификатор поста на модерации</param>
+		/// <param name="token">Токен отмены</param>
+		/// <returns>Пост</returns>
+		Task<PostPendingViewDTO?> GetPostPendingById(int postPendingId, CancellationToken token = default);
 
         /// <summary>
         /// Получение статуса поста на модерации
@@ -52,7 +59,7 @@ namespace BackendService.BLL.Interfaces
         /// <param name="userId">Автор поста</param>
         /// <param name="token">Токен отмены</param>
         /// <returns>Добавленный пост</returns>
-        Task<PostPendingEditDTO> SavePostPending(PostPendingEditDTO postPending, Guid userId, CancellationToken token = default);
+        Task<PostPendingEditDTO?> SavePostPending(PostPendingEditDTO postPending, Guid userId, CancellationToken token = default);
 
         /// <summary>
         /// Обновляет результат модерации поста на основе полученного события
@@ -61,5 +68,13 @@ namespace BackendService.BLL.Interfaces
         /// <param name="token">Токен отмены</param>
         /// <returns>Задача обновления результата модерации</returns>
         Task UpdateModerationResult(PostModeratedEvent postModeratedEvent, CancellationToken token = default);
-    }
+
+        /// <summary>
+        /// Обновление статуса поста, отправленного на модерацию
+        /// </summary>
+        /// <param name="postPendingId">Идентификатор поста</param>
+        /// <param name="token">Токен отмены</param>
+        /// <returns></returns>
+        Task UpdateStatusPublishedPost(int postPendingId, CancellationToken token = default);
+	}
 }

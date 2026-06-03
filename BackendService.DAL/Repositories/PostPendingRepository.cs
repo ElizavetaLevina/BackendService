@@ -12,6 +12,7 @@ namespace BackendService.DAL.Repositories
     {
         private readonly ApplicationDbContext _dbContext = dbContext;
         private readonly IMapper _mapper = mapper;
+        private const int BatchSize = 50;
 
         public async Task<List<PostPendingViewDTO>> GetPostsPending(CancellationToken token = default)
         {
@@ -19,7 +20,13 @@ namespace BackendService.DAL.Repositories
 
         }
 
-        public async Task<PostPendingViewDTO?> GetPostPendingById(int postPendingId, CancellationToken token = default)
+		public async Task<List<PostPendingEditDTO>> GetPostsPendingNotPublishedBatch(CancellationToken token = default)
+		{
+			return await _mapper.ProjectTo<PostPendingEditDTO>(_dbContext.PostsPending.Where(c => c.Status == StatusModerationEnum.Pending).Take(BatchSize)).ToListAsync(token);
+
+		}
+
+		public async Task<PostPendingViewDTO?> GetPostPendingById(int postPendingId, CancellationToken token = default)
         {
             return await _mapper.ProjectTo<PostPendingViewDTO>(_dbContext.PostsPending).FirstOrDefaultAsync(c => c.Id == postPendingId, token);
         }
@@ -39,9 +46,9 @@ namespace BackendService.DAL.Repositories
             _dbContext.PostsPending.Remove(await _dbContext.PostsPending.FirstAsync(c => c.Id == postPendingId, token));
         }
 
-        public async Task<PostPendingEditDTO> SavePostPending(PostPendingEditDTO postPending, Guid userId, CancellationToken token = default)
+        public async Task<PostPendingEditDTO?> SavePostPending(PostPendingEditDTO postPending, Guid userId, CancellationToken token = default)
         {
-            PostPendingEntity postPendingEntity;
+            PostPendingEntity? postPendingEntity;
 
             if (postPending.Id == 0)
             {
@@ -51,12 +58,14 @@ namespace BackendService.DAL.Repositories
             }
             else
             {
-                postPendingEntity = await _dbContext.PostsPending.FirstAsync(c => c.Id == postPending.Id, token);
+                postPendingEntity = await _dbContext.PostsPending.FirstOrDefaultAsync(c => c.Id == postPending.Id, token);
+                if (postPendingEntity is null) return null;
+
                 _mapper.Map(postPending, postPendingEntity);
                 postPendingEntity.Status = StatusModerationEnum.Pending;
                 postPendingEntity.RejectionReason = null;
             }
-            
+
             await _dbContext.SaveChangesAsync(token);
             return _mapper.Map<PostPendingEditDTO>(postPendingEntity);
         }
@@ -67,8 +76,13 @@ namespace BackendService.DAL.Repositories
             postPendingEntity.Status = postModeratedEvent.Status;
             postPendingEntity.RejectionReason = postModeratedEvent.RejectionReason;
 
-            _dbContext.PostsPending.Update(postPendingEntity);
             await _dbContext.SaveChangesAsync(token);
         }
-    }
+
+        public async Task UpdateStatusPublishedPost(int postPendingId, CancellationToken token = default)
+        {
+            PostPendingEntity postPendingEntity = await _dbContext.PostsPending.FirstAsync(c => c.Id == postPendingId, token);
+            postPendingEntity.Status = StatusModerationEnum.SentForModeration;
+		}
+	}
 }

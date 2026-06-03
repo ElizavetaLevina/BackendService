@@ -2,17 +2,15 @@
 using BackendService.BLL.Interfaces;
 using BackendService.Common.DTO;
 using BackendService.Common.Exceptions;
-using MassTransit;
 using Shared.Contracts.DTO;
 using Shared.Contracts.Enum;
 
 namespace BackendService.BLL.Logics
 {
-    public class PostPendingLogic(IPostPendingRepository postPendingRepository, IPostRepository postRepository, IPublishEndpoint publishEndpoint, IUnitOfWork unitOfWork, IMapper mapper) : IPostPendingLogic
+    public class PostPendingLogic(IPostPendingRepository postPendingRepository, IPostRepository postRepository, IUnitOfWork unitOfWork, IMapper mapper) : IPostPendingLogic
     {
         private readonly IPostPendingRepository _postPendingRepository = postPendingRepository;
         private readonly IPostRepository _postRepository = postRepository;
-        private readonly IPublishEndpoint _publishEndpoint = publishEndpoint;
         private readonly IUnitOfWork _unitOfWork = unitOfWork;
         private readonly IMapper _mapper = mapper;
 
@@ -50,20 +48,18 @@ namespace BackendService.BLL.Logics
 
             if (postPending.Id > 0 && await IsPostModeration(postPending.Id, token)) throw new ValidationException($"Пост с ID {postPending.PostId} находится на модерации, его нельзя отредактировать");
 
-            if (postPending.Id > 0 && await IsPostPendingOwner(postPending.Id, userId, token) == false) throw new ForbiddenException("Недостаточно прав для редактирования поста");
+            if (postPending.PostId is not null && postPending.Id > 0 && await IsPostPendingOwner(postPending.Id, userId, token) == false) throw new ForbiddenException("Недостаточно прав для редактирования поста");
 
             if (postPending.Id == 0 && postPending.PostId is not null && await IsPostOwner((int)postPending.PostId, userId, token) == false) throw new ForbiddenException("Недостаточно прав для редактирования поста");
 
             try
             {
-                var result =  await _postPendingRepository.SavePostPending(postPending, userId, token);
-
-                await _publishEndpoint.Publish(_mapper.Map<PostSubmittedForModeration>(result), token);
-                return result;
-            }
-            catch (InvalidOperationException)
+                var result = await _postPendingRepository.SavePostPending(postPending, userId, token);
+                return result ?? throw new NotFoundException($"Пост с ID {postPending.Id} не найден и не может быть отредактирован");
+			}
+            catch (Exception ex)
             {
-                throw new NotFoundException($"Пост с ID {postPending.Id} не найден и не может быть отредактирован");
+                throw new InvalidOperationException($"Ошибка при сохранении поста", ex);
             }
         }
 
@@ -131,7 +127,7 @@ namespace BackendService.BLL.Logics
         private async Task<bool> IsPostModeration(int postPendingId, CancellationToken token = default)
         {
             var status = await _postPendingRepository.GetPostPendingStatus(postPendingId, token);
-            return status is not null && status == StatusModerationEnum.Pending;
+            return status is not null && (status == StatusModerationEnum.Pending || status == StatusModerationEnum.SentForModeration);
         }
     }
 }

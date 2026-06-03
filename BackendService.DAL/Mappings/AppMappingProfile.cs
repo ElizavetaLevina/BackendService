@@ -1,9 +1,7 @@
 ﻿using AutoMapper;
-using AutoMapper.Execution;
 using BackendService.Common.DTO;
 using BackendService.DAL.Models;
 using Shared.Contracts.DTO;
-using System.Collections.Generic;
 
 namespace BackendService.DAL.Mappings
 {

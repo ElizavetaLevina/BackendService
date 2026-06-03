@@ -27,7 +27,7 @@ namespace BackendService.Tests.Logics
             _publishEndpoint = new Mock<IPublishEndpoint>();
             _unitOfWork = new Mock<IUnitOfWork>();
             _mapper = new Mock<IMapper>();
-            _postPendingLogic = new PostPendingLogic(_postPendingRepository.Object, _postRepository.Object, _publishEndpoint.Object, _unitOfWork.Object, _mapper.Object);
+            _postPendingLogic = new PostPendingLogic(_postPendingRepository.Object, _postRepository.Object, _unitOfWork.Object, _mapper.Object);
         }
 
         [Theory]
@@ -75,41 +75,36 @@ namespace BackendService.Tests.Logics
             _postPendingRepository.Verify(c => c.SavePostPending(fakeDTO, userId, It.IsAny<CancellationToken>()), Times.Never);
         }
 
-        [Theory]
-        [InlineData(0, 1, "11111111-1111-1111-1111-111111111111", "11111111-1111-1111-1111-111111111111", null)]
-        [InlineData(1, 1, "11111111-1111-1111-1111-111111111111", "11111111-1111-1111-1111-111111111111", StatusModerationEnum.Rejected)]
-        public async Task SavePostPending_SavesPost(int id, int postId, string userIdString, string ownerIdString, StatusModerationEnum? status)
-        {
-            var userId = Guid.Parse(userIdString);
-            var ownerId = Guid.Parse(ownerIdString);
-            var fakeDTO = new PostPendingEditDTO { Id = id, PostId = postId };
-            var expectedEvent = new PostSubmittedForModeration { Id = fakeDTO.Id, PostId = fakeDTO.PostId };
+		[Theory]
+		[InlineData(0, 1, "11111111-1111-1111-1111-111111111111", "11111111-1111-1111-1111-111111111111", null)]
+		[InlineData(1, 1, "11111111-1111-1111-1111-111111111111", "11111111-1111-1111-1111-111111111111", StatusModerationEnum.Rejected)]
+		public async Task SavePostPending_SavesPost(int id, int postId, string userIdString, string ownerIdString, StatusModerationEnum? status)
+		{
+			var userId = Guid.Parse(userIdString);
+			var ownerId = Guid.Parse(ownerIdString);
+			var fakeDTO = new PostPendingEditDTO { Id = id, PostId = postId };
+			var expectedEvent = new PostSubmittedForModeration { Id = fakeDTO.Id, PostId = fakeDTO.PostId };
 
-            if (id > 0)
-            {
-                _postPendingRepository.Setup(c => c.GetUserIdByPostPendingId(id, It.IsAny<CancellationToken>())).ReturnsAsync(ownerId);
-                _postPendingRepository.Setup(c => c.GetPostPendingStatus(id, It.IsAny<CancellationToken>())).ReturnsAsync(status);
-            }
-            else
-                _postRepository.Setup(c => c.GetUserIdByPostId(postId, It.IsAny<CancellationToken>())).ReturnsAsync(ownerId);
+			if (id > 0)
+			{
+				_postPendingRepository.Setup(c => c.GetUserIdByPostPendingId(id, It.IsAny<CancellationToken>())).ReturnsAsync(ownerId);
+				_postPendingRepository.Setup(c => c.GetPostPendingStatus(id, It.IsAny<CancellationToken>())).ReturnsAsync(status);
+			}
+			else
+				_postRepository.Setup(c => c.GetUserIdByPostId(postId, It.IsAny<CancellationToken>())).ReturnsAsync(ownerId);
 
-            _postPendingRepository.Setup(c => c.SavePostPending(fakeDTO, userId, It.IsAny<CancellationToken>())).ReturnsAsync(fakeDTO);
+			_postPendingRepository.Setup(c => c.SavePostPending(fakeDTO, userId, It.IsAny<CancellationToken>())).ReturnsAsync(fakeDTO);
 
-            _mapper.Setup(c => c.Map<PostSubmittedForModeration>(It.IsAny<PostPendingEditDTO>())).Returns(expectedEvent);
+			var result = await _postPendingLogic.SavePostPending(fakeDTO, userId);
 
-            _publishEndpoint.Setup(c => c.Publish(expectedEvent, It.IsAny<CancellationToken>()));
+			Assert.NotNull(result);
+			Assert.Equal(fakeDTO.Id, result.Id);
+			Assert.Equal(fakeDTO.PostId, result.PostId);
 
-            var result = await _postPendingLogic.SavePostPending(fakeDTO, userId);
+			_postPendingRepository.Verify(c => c.SavePostPending(fakeDTO, userId, It.IsAny<CancellationToken>()), Times.Once);
+		}
 
-            Assert.NotNull(result);
-            Assert.Equal(fakeDTO.Id, result.Id);
-            Assert.Equal(fakeDTO.PostId, result.PostId);
-
-            _mapper.Verify(c => c.Map<PostSubmittedForModeration>(result), Times.Once);
-            _publishEndpoint.Verify(c => c.Publish(expectedEvent, It.IsAny<CancellationToken>()), Times.Once); 
-        }
-
-        [Theory]
+		[Theory]
         [InlineData(2, 0)]
         [InlineData(2, 3)]
         public async Task ApprovePost_Success_CallsSaveAndDeleteAndSaveChanges(int postPendingId, int postId)
