@@ -1,5 +1,7 @@
 ﻿using BackendService.BLL.Consumers;
 using MassTransit;
+using Microsoft.EntityFrameworkCore;
+using Npgsql;
 
 namespace BackendService.API.Configurations
 {
@@ -20,11 +22,14 @@ namespace BackendService.API.Configurations
                         x.Password(configuration["RabbitMQ:Password"]);
                     });
 
-                    //cfg.ReceiveEndpoint("PostSubmittedForModeration", e =>
-                    //{
-                    //    e.Bind("PostSubmittedForModeration");
-                    //    e.ConfigureConsumer<PostModeratedEventConsumer>(context);
-                    //});
+                    cfg.UseMessageRetry(x =>
+                    {
+                        x.Intervals(TimeSpan.FromSeconds(10), TimeSpan.FromMinutes(2), TimeSpan.FromMinutes(10));
+						x.Handle<NpgsqlException>();
+						x.Handle<TimeoutException>();
+						x.Handle<DbUpdateException>();
+					});
+
                     cfg.ConfigureEndpoints(context);
                 });
             });

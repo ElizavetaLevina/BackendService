@@ -1,6 +1,5 @@
 ﻿using BackendService.BLL.Interfaces;
 using MassTransit;
-using Microsoft.Extensions.Logging;
 using Shared.Contracts.DTO;
 
 namespace BackendService.BLL.Consumers
