@@ -81,6 +81,7 @@ jobs:
           ConnectionStrings__DefaultConnection: "Host=localhost;Database=test_db;Username=test_user;Password=test_password"
           Keycloak__Authority: "http://localhost:8090/realms/master"
           API_KEY: "test-key"
+          BASE_API_URL: "http://test"
           
       - name: Run tests
         run: dotnet test --no-build --verbosity normal
