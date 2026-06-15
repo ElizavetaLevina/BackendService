@@ -72,8 +72,16 @@ jobs:
       
       - name: Build
         run: dotnet build --no-restore
+
+      - name: Apply migrations
+        run: |
+          dotnet ef database update \
+            --project BackendService.DAL \
+            --startup-project BackendService.API
+        env:
+          ConnectionStrings__DefaultConnection: "Host=localhost;Database=test_db;Username=test_user;Password=test_password"
         
-      - name: Run API (debug)
+      - name: Run API
         run: |
           dotnet run --project BackendService.API --urls "http://localhost:5000" &
           sleep 15
