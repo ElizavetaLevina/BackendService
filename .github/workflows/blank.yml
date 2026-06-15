@@ -82,6 +82,7 @@ jobs:
           Keycloak__Authority: "http://localhost:8090/realms/master"
           API_KEY: "test-key"
           BASE_API_URL: "http://test"
+          MT_LICENSE: "ignore"
           
       - name: Run tests
         run: dotnet test --no-build --verbosity normal
