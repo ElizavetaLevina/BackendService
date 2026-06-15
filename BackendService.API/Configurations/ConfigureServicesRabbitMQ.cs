@@ -1,4 +1,5 @@
 ﻿using BackendService.BLL.Consumers;
+using GreenPipes;
 using MassTransit;
 using Microsoft.EntityFrameworkCore;
 using Npgsql;
