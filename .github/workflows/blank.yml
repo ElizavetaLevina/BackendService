@@ -75,14 +75,14 @@ jobs:
         
       - name: Run API (debug)
         run: |
-          dotnet run --project BackendService.API --urls "http://localhost:5000"
+          dotnet run --project BackendService.API --urls "http://localhost:5000" &
+          sleep 15
         env:
           ASPNETCORE_ENVIRONMENT: Development
           ConnectionStrings__DefaultConnection: "Host=localhost;Database=test_db;Username=test_user;Password=test_password"
           Keycloak__Authority: "http://localhost:8090/realms/master"
           API_KEY: "test-key"
           BASE_API_URL: "http://test"
-          MT_LICENSE: "ignore"
           
       - name: Run tests
         run: dotnet test --no-build --verbosity normal
