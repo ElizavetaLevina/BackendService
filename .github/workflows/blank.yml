@@ -72,6 +72,15 @@ jobs:
       
       - name: Build
         run: dotnet build --no-restore
-      
+
+      - name: Start API
+        run: |
+          dotnet run --project BackendService.API --urls "http://localhost:5000" &
+          sleep 15
+        env:
+          ASPNETCORE_ENVIRONMENT: Development
+          ConnectionStrings__DefaultConnection: "Host=localhost;Database=test_db;Username=test_user;Password=test_password"
+          Keycloak__Authority: "http://localhost:8090/realms/auth-dev"
+          
       - name: Run tests
         run: dotnet test --no-build --verbosity normal
