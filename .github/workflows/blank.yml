@@ -73,6 +73,9 @@ jobs:
       - name: Build
         run: dotnet build --no-restore
 
+      - name: Install dotnet ef
+        run: dotnet tool install --global dotnet-ef
+        
       - name: Apply migrations
         run: |
           dotnet ef database update \
