@@ -38,6 +38,24 @@ jobs:
           --username ElizavetaLevina \
           --password ${{ secrets.GITHUB_TOKEN }} \
           --store-password-in-clear-text
+
+      - name: Start Keycloak
+        run: |
+          docker run -d \
+            --name keycloak \
+            -p 8090:8090 \
+            -v $(pwd)/realm.json:/opt/keycloak/data/import/realm.json \
+            -e KEYCLOAK_ADMIN=admin \
+            -e KEYCLOAK_ADMIN_PASSWORD=admin \
+            quay.io/keycloak/keycloak:latest \
+            start-dev --import-realm --http-port=8090
+
+      - name: Wait for Keycloak
+        run: |
+          for i in {1..30}; do
+            curl -s http://localhost:8090 && break
+            sleep 1
+          done
       
       - name: Restore dependencies
         run: dotnet restore
