@@ -39,6 +39,16 @@ jobs:
           --password ${{ secrets.GITHUB_TOKEN }} \
           --store-password-in-clear-text
 
+      - name: Start PostgreSQL
+        run: |
+          docker run -d \
+            --name postgres \
+            -e POSTGRES_USER=test_user \
+            -e POSTGRES_PASSWORD=test_password \
+            -e POSTGRES_DB=test_db \
+            -p 5432:5432 \
+            postgres:17.6
+
       - name: Start Keycloak
         run: |
           docker run -d \
