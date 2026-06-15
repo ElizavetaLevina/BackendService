@@ -38,12 +38,51 @@ jobs:
           --username ElizavetaLevina \
           --password ${{ secrets.GITHUB_TOKEN }} \
           --store-password-in-clear-text
+
+      - name: Start PostgreSQL
+        run: |
+          docker run -d \
+            --name postgres \
+            -e POSTGRES_USER=test_user \
+            -e POSTGRES_PASSWORD=test_password \
+            -e POSTGRES_DB=test_db \
+            -p 5432:5432 \
+            postgres:17.6
+
+      - name: Start Keycloak
+        run: |
+          docker run -d \
+            --name keycloak \
+            -p 8090:8090 \
+            -v $(pwd)/realm.json:/opt/keycloak/data/import/realm.json \
+            -e KEYCLOAK_ADMIN=admin \
+            -e KEYCLOAK_ADMIN_PASSWORD=admin \
+            quay.io/keycloak/keycloak:latest \
+            start-dev --import-realm --http-port=8090
+
+      - name: Wait for Keycloak
+        run: |
+          for i in {1..30}; do
+            curl -s http://localhost:8090 && break
+            sleep 1
+          done
       
       - name: Restore dependencies
         run: dotnet restore
       
       - name: Build
         run: dotnet build --no-restore
-      
+        
+      - name: Run API (debug)
+        run: |
+          dotnet run --project BackendService.API --urls "http://localhost:5000"
+        env:
+          ASPNETCORE_ENVIRONMENT: Development
+          ConnectionStrings__DefaultConnection: "Host=localhost;Database=test_db;Username=test_user;Password=test_password"
+          Keycloak__Authority: "http://localhost:8090/realms/master"
+          API_KEY: "test-key"
+          BASE_API_URL: "http://test"
+          MT_LICENSE: "ignore"
+          
       - name: Run tests
         run: dotnet test --no-build --verbosity normal
