@@ -88,19 +88,17 @@ jobs:
       - name: Install dotnet ef
         run: dotnet tool install --global dotnet-ef
 
-      - name: List migrations
+      - name: Override appsettings for tests
         run: |
-          dotnet ef migrations list -p BackendService.DAL -s BackendService.API
-        
+          echo '{"ConnectionStrings":{"DefaultConnection":"Host=localhost;Port=5430;Database=backend_service_tests;Username=postgres;Password=postgres"}}' > BackendService.API/appsettings.json
+          
       - name: Apply migrations
         run: |
           dotnet ef database update \
             -p BackendService.DAL \
             -s BackendService.API
-        env:
-          ConnectionStrings__DefaultConnection: "Host=localhost;Port=5430;Database=backend_service_tests;Username=postgres;Password=postgres"
             
-      - name: Check tables in test DB
+      - name: Check tables
         run: |
           docker exec postgres psql -U postgres -d backend_service_tests -c "\dt"
         
