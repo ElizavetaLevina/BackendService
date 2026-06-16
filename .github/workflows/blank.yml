@@ -19,6 +19,13 @@ jobs:
   build:
     # The type of runner that the job will run on
     runs-on: ubuntu-latest
+    
+    env:
+          ASPNETCORE_ENVIRONMENT: Development
+          ConnectionStrings__DefaultConnection: "Host=localhost;Database=test_db;Username=test_user;Password=test_password"
+          Keycloak__Authority: "http://localhost:8090/realms/master"
+          API_KEY: "test-key"
+          BASE_API_URL: "http://test"
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
@@ -81,19 +88,11 @@ jobs:
           dotnet ef database update \
             --project BackendService.DAL \
             --startup-project BackendService.API
-        env:
-          ConnectionStrings__DefaultConnection: "Host=localhost;Database=test_db;Username=test_user;Password=test_password"
-        
+            
       - name: Run API
         run: |
           dotnet run --project BackendService.API --urls "http://localhost:5000" &
           sleep 15
-        env:
-          ASPNETCORE_ENVIRONMENT: Development
-          ConnectionStrings__DefaultConnection: "Host=localhost;Database=test_db;Username=test_user;Password=test_password"
-          Keycloak__Authority: "http://localhost:8090/realms/master"
-          API_KEY: "test-key"
-          BASE_API_URL: "http://test"
           
       - name: Run tests
         run: dotnet test --no-build --verbosity normal
