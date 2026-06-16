@@ -87,6 +87,10 @@ jobs:
 
       - name: Install dotnet ef
         run: dotnet tool install --global dotnet-ef
+
+      - name: Show current database
+        run: |
+          docker exec postgres psql -U postgres -c "\l"
         
       - name: Apply migrations
         run: |
