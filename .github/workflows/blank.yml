@@ -25,6 +25,7 @@ jobs:
           Keycloak__Authority: "http://localhost:8090/realms/auth-dev"
           API_KEY: "test-key"
           BASE_API_URL: "http://test"
+          ConnectionStrings__DefaultConnection: "Host=localhost;Port=5430;Database=backend_service_tests;Username=postgres;Password=postgres"
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
@@ -91,8 +92,8 @@ jobs:
       - name: Apply migrations
         run: |
           dotnet ef database update \
-            --project BackendService.DAL \
-            --startup-project BackendService.API
+            -p BackendService.DAL \
+            -s BackendService.API
             
       - name: Run tests
         run: dotnet test --no-build --verbosity normal
