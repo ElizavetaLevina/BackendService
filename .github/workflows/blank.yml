@@ -95,6 +95,14 @@ jobs:
           echo "=== Content of appsettings.json ==="
           cat BackendService.API/appsettings.json
 
+      - name: Check migrations in assembly
+        run: |
+          dotnet ef migrations list \
+            -p BackendService.DAL \
+            -s BackendService.API
+        env:
+          ConnectionStrings__DefaultConnection: "Host=localhost;Port=5430;Database=backend_service_tests;Username=postgres;Password=postgres"
+
       - name: Add migrations (if missing)
         run: |
           dotnet ef migrations add InitialCreate \
