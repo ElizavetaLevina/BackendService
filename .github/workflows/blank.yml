@@ -22,7 +22,6 @@ jobs:
     
     env:
           ASPNETCORE_ENVIRONMENT: Development
-          ConnectionStrings__DefaultConnection: "Host=localhost;Database=test_db;Username=test_user;Password=test_password"
           Keycloak__Authority: "http://localhost:8090/realms/auth-dev"
           API_KEY: "test-key"
           BASE_API_URL: "http://test"
@@ -50,9 +49,9 @@ jobs:
         run: |
           docker run -d \
             --name postgres \
-            -e POSTGRES_USER=test_user \
-            -e POSTGRES_PASSWORD=test_password \
-            -e POSTGRES_DB=test_db \
+            -e POSTGRES_USER=postgres \
+            -e POSTGRES_PASSWORD=postgres \
+            -e POSTGRES_DB=backend_service_tests \
             -p 5430:5432 \
             postgres:17.6
 
