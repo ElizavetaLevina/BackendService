@@ -23,7 +23,7 @@ jobs:
     env:
           ASPNETCORE_ENVIRONMENT: Development
           ConnectionStrings__DefaultConnection: "Host=localhost;Database=test_db;Username=test_user;Password=test_password"
-          Keycloak__Authority: "http://localhost:8090/realms/master"
+          Keycloak__Authority: "http://localhost:8090/realms/auth-dev"
           API_KEY: "test-key"
           BASE_API_URL: "http://test"
 
@@ -55,6 +55,12 @@ jobs:
             -e POSTGRES_DB=test_db \
             -p 5432:5432 \
             postgres:17.6
+
+      - name: Wait for PostgreSQL
+        run: |
+          for i in {1..30}; do
+            docker exec postgres pg_isready -U test_user && break || sleep 1
+          done
 
       - name: Start Keycloak
         run: |
