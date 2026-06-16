@@ -95,6 +95,10 @@ jobs:
           echo "=== Content of appsettings.json ==="
           cat BackendService.API/appsettings.json
 
+      - name: Build DAL
+        run: |
+          dotnet build BackendService.DAL/BackendService.DAL.csproj -c Debug
+
       - name: Apply migrations
         run: |
           dotnet ef database update \
