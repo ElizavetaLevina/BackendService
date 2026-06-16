@@ -95,9 +95,9 @@ jobs:
             -p BackendService.DAL \
             -s BackendService.API
             
-      - name: Show connection string
+      - name: Check tables in test DB
         run: |
-          echo "Connection string from env: $ConnectionStrings__DefaultConnection"
+          docker exec postgres psql -U postgres -d backend_service_tests -c "\dt"
         
       - name: Run tests
         run: dotnet test --no-build --verbosity normal
