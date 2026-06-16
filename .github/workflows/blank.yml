@@ -88,48 +88,26 @@ jobs:
       - name: Install dotnet ef
         run: dotnet tool install --global dotnet-ef
 
-      - name: Debug appsettings override
+      - name: Override appsettings for tests
         run: |
-          echo "=== Overriding appsettings ==="
           echo '{"ConnectionStrings":{"DefaultConnection":"Host=localhost;Port=5430;Database=backend_service_tests;Username=postgres;Password=postgres"}}' > BackendService.API/appsettings.json
-          echo "=== Content of appsettings.json ==="
-          cat BackendService.API/appsettings.json
 
-      - name: Check migrations in assembly
+      - name: Generate SQL script from migrations
         run: |
-          dotnet ef migrations list \
-            -p BackendService.DAL \
-            -s BackendService.API
+          dotnet ef migrations script \
+            --project BackendService.DAL \
+            --startup-project BackendService.API \
+            --output migrations.sql
         env:
           ConnectionStrings__DefaultConnection: "Host=localhost;Port=5430;Database=backend_service_tests;Username=postgres;Password=postgres"
 
-      - name: Add migrations (if missing)
+      - name: Apply SQL script to database
         run: |
-          dotnet ef migrations add InitialCreate \
-            -p BackendService.DAL \
-            -s BackendService.API
-        env:
-          ConnectionStrings__DefaultConnection: "Host=localhost;Port=5430;Database=backend_service_tests;Username=postgres;Password=postgres"
+          docker exec -i postgres psql -U postgres -d backend_service_tests < migrations.sql
 
-      - name: Apply migrations
+      - name: Check tables
         run: |
-          dotnet ef database update \
-            -p BackendService.DAL \
-            -s BackendService.API \
-            -v
-        env:
-          ConnectionStrings__DefaultConnection: "Host=localhost;Port=5430;Database=backend_service_tests;Username=postgres;Password=postgres"
-          ASPNETCORE_ENVIRONMENT: Development
-
-      - name: Check tables in test DB
-        run: |
-          echo "=== Tables in backend_service_tests ==="
           docker exec postgres psql -U postgres -d backend_service_tests -c "\dt"
-
-      - name: Check if migrations were applied
-        run: |
-          echo "=== Applied migrations ==="
-          docker exec postgres psql -U postgres -d backend_service_tests -c "SELECT * FROM \"__EFMigrationsHistory\";" || echo "No migrations table found"
         
       - name: Run tests
         run: dotnet test --no-build --verbosity normal
