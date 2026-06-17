@@ -4,7 +4,6 @@ using BackendService.BLL.Logics;
 using BackendService.Common.DTO;
 using BackendService.Common.Exceptions;
 using MassTransit;
-using MassTransit.Transports;
 using Moq;
 using Shared.Contracts.DTO;
 using Shared.Contracts.Enum;
