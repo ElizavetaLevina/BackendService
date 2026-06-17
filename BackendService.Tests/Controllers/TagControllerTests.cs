@@ -1,9 +1,6 @@
 ﻿using BackendService.Common.DTO;
-using BackendService.DAL.Models;
 using BackendService.Tests.Factories;
 using BackendService.Tests.Helpers;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
 using System.Net;
 using System.Net.Http.Headers;
 using System.Text;

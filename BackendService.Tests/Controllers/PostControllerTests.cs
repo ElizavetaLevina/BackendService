@@ -3,8 +3,6 @@ using BackendService.Common.DTO;
 using BackendService.DAL.Models;
 using BackendService.Tests.Factories;
 using BackendService.Tests.Helpers;
-using MassTransit;
-using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Shared.Contracts.DTO;
@@ -46,7 +44,7 @@ namespace BackendService.Tests.Controllers
             _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
             var response = await _client.GetAsync("api/Post/list");
-            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+			Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         }
 
         [Fact]
