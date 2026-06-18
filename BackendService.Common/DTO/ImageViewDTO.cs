@@ -7,6 +7,6 @@
     {
         public int Id { get; set; }
 
-        public string StringData { get; set; }
-    }
+        public string StringData { get; set; } = string.Empty;
+	}
 }

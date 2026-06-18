@@ -21,7 +21,7 @@ namespace BackendService.Tests.Logics
         [Fact]
         public async Task GetPosts_ReturnsListOfPosts()
         {
-            var fakeDTOs = new List<PostDTO> { new PostDTO { Id = 1 }, new PostDTO { Id = 2 } };
+            var fakeDTOs = new List<PostDTO> { new() { Id = 1 }, new() { Id = 2 } };
             _postRepository.Setup(c => c.GetPosts(It.IsAny<CancellationToken>())).ReturnsAsync(fakeDTOs);
 
             var result = await _postLogic.GetPosts();

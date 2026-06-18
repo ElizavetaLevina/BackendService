@@ -27,7 +27,7 @@ namespace BackendService.Tests.Logics
         {
             var fakeDTO = new TopHeadlinesSourceDTO { Country = country, Category = category, Sources = sources, Keyword = keyword, PageSize = pageSize, Page = page };
 
-            var expectedResponse = new NewsApiResponseDTO { Status = "ok", TotalResult = 2, Articles = new List<ArticleDTO>() };
+            var expectedResponse = new NewsApiResponseDTO { Status = "ok", TotalResult = 2, Articles = [] };
 
             _newsRepository.Setup(c => c.GetTopHeadlines(fakeDTO, It.IsAny<CancellationToken>())).ReturnsAsync(expectedResponse);
 
