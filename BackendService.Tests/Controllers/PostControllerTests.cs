@@ -20,12 +20,12 @@ namespace BackendService.Tests.Controllers
         private readonly HttpClient _client;
         private readonly ApplicationDbContext _dbContext;
         private readonly CustomWebApplicationFactory _factory;
-        private static readonly JsonSerializerOptions _jsonOptions = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
+        private static readonly JsonSerializerOptions _jsonOptions = new() { PropertyNameCaseInsensitive = true };
 
         public PostControllerTests(CustomWebApplicationFactory factory)
         {
             _client = factory.CreateClient();
-            _dbContext = factory._dbContext;
+            _dbContext = factory.DbContext;
             _factory = factory;
         }
 
@@ -103,7 +103,7 @@ namespace BackendService.Tests.Controllers
 
             var response = await _client.PostAsync("api/Post", content);
             var created = JsonSerializer.Deserialize<PostPendingEditDTO>(await response.Content.ReadAsStringAsync(), _jsonOptions);
-            var pendingId = created.Id;
+            var pendingId = created!.Id;
 
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
@@ -135,7 +135,7 @@ namespace BackendService.Tests.Controllers
 
             var response = await _client.PostAsync("api/Post", content);
             var created = JsonSerializer.Deserialize<PostPendingEditDTO>(await response.Content.ReadAsStringAsync(), _jsonOptions);
-            var pendingId = created.Id;
+            var pendingId = created!.Id;
 
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 

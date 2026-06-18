@@ -28,10 +28,10 @@ namespace BackendService.DAL.Models
         /// Ссылка на пост
         /// </summary>
         public int PostId { get; set; }
-        [ForeignKey("PostId")]
-        [InverseProperty("Images")]
+		[ForeignKey("PostId")]
+		[InverseProperty("Images")]
 
-        /// Пост
-        public virtual PostEntity Post { get; set; }
+		/// Пост
+		public virtual PostEntity Post { get; set; } = new();
     }
 }
