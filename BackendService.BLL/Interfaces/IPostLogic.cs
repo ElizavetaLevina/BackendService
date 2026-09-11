@@ -23,11 +23,5 @@ namespace BackendService.BLL.Interfaces
         /// <param name="postId">идентификатор поста</param>
         /// <returns>задача удаления</returns>
         Task DeletePost(int postId, Guid userId, CancellationToken token = default);
-
-        /// <summary>
-        /// Сохранение поста
-        /// </summary>
-        /// <param name="post">пост</param>
-        Task SavePost(PostEditDTO post, Guid userId, CancellationToken token = default);
     }
 }

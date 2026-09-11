@@ -28,30 +28,9 @@ namespace BackendService.BLL.Logics
 
             if (await IsPostOwner(postId, userId, token) == false) throw new ForbiddenException("Недостаточно прав для удаления поста");
 
-            try
-            {
-                await _postRepository.DeletePost(postId, token);
-            }
-            catch (InvalidOperationException)
-            {
-                throw new NotFoundException($"Пост с ID {postId} не найден и не может быть удалён");
-            }
-        }
+			var deleted = await _postRepository.DeletePost(postId, token);
 
-        public async Task SavePost(PostEditDTO post, Guid userId, CancellationToken token = default)
-        {
-            if (post.Id < 0) throw new ValidationException("ID должен быть положительным целым числом");
-
-            if (post.Id > 0 && await IsPostOwner(post.Id, userId, token) == false) throw new ForbiddenException("Недостаточно прав для редактирования поста");
-
-            try
-            {
-                await _postRepository.SavePost(post, userId, token);
-            }
-            catch (InvalidOperationException)
-            {
-                throw new NotFoundException($"Пост с ID {post.Id} не найден и не может быть отредактирован");
-            }
+			if (deleted == false) throw new NotFoundException($"Пост с ID {postId} не найден и не может быть удалён");
         }
 
         /// <summary>

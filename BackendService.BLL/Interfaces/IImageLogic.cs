@@ -31,14 +31,5 @@ namespace BackendService.BLL.Interfaces
         /// <param name="token">токен отмены</param>
         /// <returns>id сохранённой картинки</returns>
         Task<int> SaveImage(IFormFile image, int postId, Guid userId, CancellationToken token = default);
-
-        /// <summary>
-        /// Проверяет, является ли указанный пользователь владельцем поста
-        /// </summary>
-        /// <param name="postId">идентификатор поста</param>
-        /// <param name="userId">идентификатор пользователя для проверки</param>
-        /// <param name="token">токен отмены</param>
-        /// <returns>результат проверки</returns>
-        Task<bool> IsPostOwner(int postId, Guid userId, CancellationToken token = default);
     }
 }

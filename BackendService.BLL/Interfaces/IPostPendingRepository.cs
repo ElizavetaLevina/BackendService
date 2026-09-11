@@ -49,8 +49,8 @@ namespace BackendService.BLL.Interfaces
         /// </summary>
         /// <param name="postPendingId">Идентификатор поста для удаления</param>
         /// <param name="token">Токен отмены</param>
-        /// <returns>Задача удаления</returns>
-        Task DeletePostPending(int postPendingId, CancellationToken token = default);
+        /// <returns>удален ли пост</returns>
+        Task<bool> DeletePostPending(int postPendingId, CancellationToken token = default);
 
         /// <summary>
         /// Добавление поста на модерацию
@@ -66,15 +66,15 @@ namespace BackendService.BLL.Interfaces
         /// </summary>
         /// <param name="postModeratedEvent">Событие с результатом модерации</param>
         /// <param name="token">Токен отмены</param>
-        /// <returns>Задача обновления результата модерации</returns>
-        Task UpdateModerationResult(PostModeratedEvent postModeratedEvent, CancellationToken token = default);
+        /// <returns>обновлен ли результат модерации</returns>
+        Task<bool> UpdateModerationResult(PostModeratedEvent postModeratedEvent, CancellationToken token = default);
 
         /// <summary>
         /// Обновление статуса поста, отправленного на модерацию
         /// </summary>
         /// <param name="postPendingId">Идентификатор поста</param>
         /// <param name="token">Токен отмены</param>
-        /// <returns></returns>
-        Task UpdateStatusPublishedPost(int postPendingId, CancellationToken token = default);
+        /// <returns>обновлен ли статус поста</returns>
+        Task<bool> UpdateStatusPublishedPost(int postPendingId, CancellationToken token = default);
 	}
 }

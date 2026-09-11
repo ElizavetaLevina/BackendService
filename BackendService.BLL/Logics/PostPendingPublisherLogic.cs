@@ -23,7 +23,10 @@ namespace BackendService.BLL.Logics
 				try
 				{
 					await _publishEndpoint.Publish(_mapper.Map<PostSubmittedForModeration>(post), token);
-					await _postPendingRepository.UpdateStatusPublishedPost(post.Id, token);
+
+					var updated = await _postPendingRepository.UpdateStatusPublishedPost(post.Id, token);
+
+					if (updated == false) _logger.LogWarning("Пост {PostId} не найден при обновлении статуса", post.Id);
 				}
 				catch (Exception ex)
 				{
