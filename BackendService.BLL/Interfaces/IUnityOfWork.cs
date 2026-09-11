@@ -1,6 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore.Storage;
-
-namespace BackendService.BLL.Interfaces
+﻿namespace BackendService.BLL.Interfaces
 {
     /// <summary>
     /// Unit of Work для управления транзакциями и репозиториями

@@ -33,7 +33,8 @@ namespace BackendService.API.Configurations
 
                     cfg.ConfigureEndpoints(context);
                 });
-            });
-        }
+            })
+			.AddMassTransitHostedService();
+		}
     }
 }

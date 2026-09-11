@@ -12,30 +12,38 @@ namespace BackendService.DAL.Repositories
         private readonly IMapper _mapper = mapper;
         public async Task<List<PostDTO>> GetPosts(CancellationToken token = default)
         {
-            return await _mapper.ProjectTo<PostDTO>(_dbContext.Set<PostEntity>().Where(c => c.Deleted == false).OrderBy(p => p.Id)).ToListAsync(token);
+			
+            return await _mapper.ProjectTo<PostDTO>(_dbContext.Posts.AsNoTracking().Where(c => c.Deleted == false).OrderBy(p => p.Id)).ToListAsync(token);
         }
 
         public async Task<PostDTO?> GetPostById(int postId, CancellationToken token = default)
         {
-            return await _mapper.ProjectTo<PostDTO>(_dbContext.Set<PostEntity>()).FirstOrDefaultAsync(c => c.Id == postId, token);
+            return await _mapper.ProjectTo<PostDTO>(_dbContext.Posts.AsNoTracking().Where(c => c.Id == postId)).FirstOrDefaultAsync(token);
         }
 
-        public async Task DeletePost(int postId, CancellationToken token = default)
+        public async Task<bool> DeletePost(int postId, CancellationToken token = default)
         {
-            var postEntity = await _dbContext.Posts.Include(p => p.Tags).Include(p => p.Images).FirstAsync(p => p.Id == postId, token);
+            var postEntity = await _dbContext.Posts.Include(p => p.Tags).Include(p => p.Images).FirstOrDefaultAsync(p => p.Id == postId, token);
+
+			if (postEntity == null) return false;
+
             postEntity.Tags.Clear();
             postEntity.Images?.Clear();
             postEntity.Deleted = true;
             await _dbContext.SaveChangesAsync(token);
+			return true;
         }
 
-        public async Task SavePost(PostEditDTO post, Guid userId, CancellationToken token = default)
+        public async Task<bool> SavePost(PostEditDTO post, Guid userId, CancellationToken token = default)
         {
-            PostEntity postEntity;
+            PostEntity? postEntity;
 
             if (post.Id != 0)
             {
-                postEntity = await _dbContext.Posts.Include(p => p.Tags).Include(p => p.Images).FirstAsync(p => p.Id == post.Id, token);
+                postEntity = await _dbContext.Posts.Include(p => p.Tags).Include(p => p.Images).FirstOrDefaultAsync(p => p.Id == post.Id, token);
+
+				if (postEntity == null) return false;
+
                 _mapper.Map(post, postEntity);
                 postEntity.Tags = await _dbContext.Tags.Where(c => post.Tags.Contains(c.Id)).ToListAsync(token);
                 postEntity.Images = await _dbContext.Images.Where(c => post.Images.Contains(c.Id)).ToListAsync(token);
@@ -50,11 +58,12 @@ namespace BackendService.DAL.Repositories
 
                 _dbContext.Posts.Add(postEntity);
             }
+			return true;
         }
 
         public async Task<Guid?> GetUserIdByPostId(int postId, CancellationToken token = default)
         {
-            return (await _dbContext.Set<PostEntity>().FirstOrDefaultAsync(c => c.Id == postId, token))?.UserId;
+            return (await _dbContext.Posts.AsNoTracking().Where(c => c.Id == postId).Select(c => c.UserId).FirstOrDefaultAsync(token));
         }
     }
 }

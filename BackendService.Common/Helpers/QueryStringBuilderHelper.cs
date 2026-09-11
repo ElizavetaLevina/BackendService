@@ -20,7 +20,7 @@ namespace BackendService.Common.Helpers
         {
             if (string.IsNullOrWhiteSpace(param)) return this;
 
-            _queryBuilder.Append(name).Append("=").Append(param).Append("&");
+            _queryBuilder.Append(name).Append('=').Append(param).Append('&');
             return this;
         }
 
@@ -31,7 +31,7 @@ namespace BackendService.Common.Helpers
         /// <returns>тот же экземпляр строителя для цепочки вызовов</returns>
         public QueryStringBuilderHelper AddApiKey(string apiKey)
         {
-            _queryBuilder.Append("apiKey").Append("=").Append(apiKey);
+            _queryBuilder.Append("apiKey").Append('=').Append(apiKey);
             return this;
         }
 

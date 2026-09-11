@@ -20,7 +20,7 @@ namespace BackendService.Tests.Logics
         [Fact]
         public async Task GetTags_ReturnsListOfTags()
         {
-            var fakeDTOs = new List<TagEditDTO> { new TagEditDTO { Id = 1 }, new TagEditDTO { Id = 2 } };
+            var fakeDTOs = new List<TagEditDTO> { new() { Id = 1 }, new() { Id = 2 } };
 
             _tagRepository.Setup(c => c.GetTags(It.IsAny<CancellationToken>())).ReturnsAsync(fakeDTOs);
 

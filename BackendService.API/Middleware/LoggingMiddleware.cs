@@ -1,11 +1,4 @@
-﻿using Microsoft.AspNetCore.Diagnostics;
-using Microsoft.AspNetCore.Http;
-using System;
-using System.Diagnostics;
-using System.Text;
-using System.Text.Json;
-
-namespace BackendService.API.Middleware
+﻿namespace BackendService.API.Middleware
 {
     public class LoggingMiddleware(RequestDelegate next, ILogger<LoggingMiddleware> logger)
     {
@@ -16,7 +9,7 @@ namespace BackendService.API.Middleware
         {
             httpContext.Items["StartTime"] = DateTime.UtcNow;
 
-            var paramsString = string.Join(", ", httpContext.Request.Query.Select(p => $"{p.Key}={p.Value.ToString()}"));
+            var paramsString = string.Join(", ", httpContext.Request.Query.Select(p => $"{p.Key}={p.Value}"));
 
             _logger.LogInformation("http.request : Before {Method} {Path}, params: {{{Params}}}",
                 httpContext.Request.Method,

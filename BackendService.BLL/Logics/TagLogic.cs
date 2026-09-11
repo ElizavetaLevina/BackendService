@@ -26,28 +26,16 @@ namespace BackendService.BLL.Logics
         {
             if (tagId <= 0) throw new ValidationException("ID должен быть положительным целым числом");
 
-            try
-            {
-                await _tagRepository.DeleteTag(tagId, token);
-            }
-            catch (InvalidOperationException)
-            {
-                throw new NotFoundException($"Тег с ID {tagId} не найден и не может быть удалён");
-            }
+			var deleted = await _tagRepository.DeleteTag(tagId, token);
+
+			if (deleted == false) throw new NotFoundException($"Тег с ID {tagId} не найден и не может быть удалён");
         }
 
         public async Task<TagEditDTO> SaveTag(TagEditDTO tag, CancellationToken token = default)
         {
             if (tag.Id < 0) throw new ValidationException("ID должен быть положительным целым числом");
 
-            try
-            {
-                return await _tagRepository.SaveTag(tag, token);
-            }
-            catch (InvalidOperationException)
-            {
-                throw new NotFoundException($"Тег с ID {tag.Id} не найден и не может быть отредактирован");
-            }
+			return await _tagRepository.SaveTag(tag, token) ?? throw new NotFoundException($"Тег с ID {tag.Id} не найден и не может быть отредактирован");
         }
     }
 }

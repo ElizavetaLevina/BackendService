@@ -24,7 +24,7 @@ namespace BackendService.Tests.Logics
         [InlineData(1)]
         public async Task GetPostImages_ValidId_ReturnsListOfImages(int postId)
         {
-            var fakeDTOs = new List<ImageViewDTO> { new ImageViewDTO { Id = 1 }, new ImageViewDTO { Id = 3 } };
+            var fakeDTOs = new List<ImageViewDTO> { new() { Id = 1 }, new() { Id = 3 } };
             _imageRepository.Setup(c => c.GetPostImages(postId, It.IsAny<CancellationToken>())).ReturnsAsync(fakeDTOs);
 
             var result = await _imageLogic.GetPostImages(postId);

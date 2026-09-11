@@ -13,12 +13,17 @@ namespace BackendService.DAL.Repositories
 
         public async Task<List<ImageViewDTO>> GetPostImages(int postId, CancellationToken token = default)
         {
-            return await _mapper.ProjectTo<ImageViewDTO>(_dbContext.Images.Where(c => c.PostId == postId && c.Deleted == false).OrderBy(c => c.Id)).ToListAsync(token);
+			var query = _dbContext.Images.AsNoTracking().Where(c => c.PostId == postId && c.Deleted == false).OrderBy(c => c.Id);
+
+            return await _mapper.ProjectTo<ImageViewDTO>(query).ToListAsync(token);
         }
 
         public async Task DeleteImage(int imageId, CancellationToken token = default)
         {
-            var image = await _dbContext.Images.FirstAsync(c => c.Id == imageId, token);
+            var image = await _dbContext.Images.FirstOrDefaultAsync(c => c.Id == imageId, token);
+
+			if (image == null) return;
+
             image.Deleted = true;
             await _dbContext.SaveChangesAsync(token);
         }        
@@ -34,7 +39,7 @@ namespace BackendService.DAL.Repositories
 
         public async Task<int?> GetPostIdByImageId(int imageId, CancellationToken token = default)
         {
-            return (await _dbContext.Images.FirstOrDefaultAsync(c => c.Id == imageId, token))?.PostId;
+			return (await _dbContext.Images.AsNoTracking().Where(c => c.Id == imageId).Select(c => c.Id).FirstOrDefaultAsync(token));
         }
     }
 }
