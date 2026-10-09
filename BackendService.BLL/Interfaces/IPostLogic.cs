@@ -7,13 +7,18 @@ namespace BackendService.BLL.Interfaces
         /// <summary>
         /// Получение списка постов
         /// </summary>
-        /// <returns>список постов</returns>
-        Task<List<PostDTO>> GetPosts(CancellationToken token = default);
+        /// <param name="page">Номер страницы (начиная с 1)</param>
+        /// <param name="pageSize">Размер страницы</param>
+        /// <param name="token"Токен отмены</param>
+        /// <returns>Список постов</returns>
+        Task<List<PostDTO>> GetPosts(int page, int pageSize, CancellationToken token = default);
 
         /// <summary>
         /// Получение поста по идентификатору
         /// </summary>
         /// <param name="postId">идентификатор поста</param>
+        /// <param name="token"Токен отмены</param>
+
         /// <returns>пост</returns>
         Task<PostDTO?> GetPostById(int postId, CancellationToken token = default);
 
@@ -21,6 +26,7 @@ namespace BackendService.BLL.Interfaces
         /// Удаление поста
         /// </summary>
         /// <param name="postId">идентификатор поста</param>
+        /// <param name="token"Токен отмены</param>
         /// <returns>задача удаления</returns>
         Task DeletePost(int postId, Guid userId, CancellationToken token = default);
     }

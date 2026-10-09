@@ -22,9 +22,9 @@ namespace BackendService.Tests.Logics
         {
             var fakeDTOs = new List<TagEditDTO> { new() { Id = 1 }, new() { Id = 2 } };
 
-            _tagRepository.Setup(c => c.GetTags(It.IsAny<CancellationToken>())).ReturnsAsync(fakeDTOs);
+            _tagRepository.Setup(c => c.GetTags(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<CancellationToken>())).ReturnsAsync(fakeDTOs);
 
-            var result = await _tagLogic.GetTags();
+            var result = await _tagLogic.GetTags(1, 20);
 
             Assert.NotNull(result);
             Assert.Equal(fakeDTOs.Count, result.Count);
@@ -60,7 +60,7 @@ namespace BackendService.Tests.Logics
         [InlineData(1)]
         public async Task DeleteTag_ValidId_DeletesTag(int tagId)
         {
-            _tagRepository.Setup(c => c.DeleteTag(tagId, It.IsAny<CancellationToken>())).Returns(Task.CompletedTask);
+            _tagRepository.Setup(c => c.DeleteTag(tagId, It.IsAny<CancellationToken>())).ReturnsAsync(true);
 
             await _tagLogic.DeleteTag(tagId);
 

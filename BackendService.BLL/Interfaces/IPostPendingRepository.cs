@@ -70,11 +70,11 @@ namespace BackendService.BLL.Interfaces
         Task<bool> UpdateModerationResult(PostModeratedEvent postModeratedEvent, CancellationToken token = default);
 
         /// <summary>
-        /// Обновление статуса поста, отправленного на модерацию
+        /// Обновление статуса постов, отправленных на модерацию
         /// </summary>
-        /// <param name="postPendingId">Идентификатор поста</param>
+        /// <param name="postPendingIds">Идентификаторы постов</param>
         /// <param name="token">Токен отмены</param>
-        /// <returns>обновлен ли статус поста</returns>
-        Task<bool> UpdateStatusPublishedPost(int postPendingId, CancellationToken token = default);
+        /// <returns>Идентификаторы постов, у которых обновлён статус</returns>
+        Task<HashSet<int>> UpdateStatusPublishedPosts(IReadOnlyCollection<int> postPendingIds, CancellationToken token = default);
 	}
 }

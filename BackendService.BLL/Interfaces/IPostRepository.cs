@@ -7,9 +7,11 @@ namespace BackendService.BLL.Interfaces
         /// <summary>
         /// Получение списка постов
         /// </summary>
-        /// <param name="token">токен отмены</param>
-        /// <returns>список постов</returns>
-        Task<List<PostDTO>> GetPosts(CancellationToken token = default);
+        /// <param name="page">Номер страницы (начиная с 1)</param>
+        /// <param name="pageSize">Размер страницы</param>
+        /// <param name="token">Токен отмены</param>
+        /// <returns>Список постов</returns>
+        Task<List<PostDTO>> GetPosts(int page, int pageSize, CancellationToken token = default);
 
         /// <summary>
         /// Получение поста по идентификатору

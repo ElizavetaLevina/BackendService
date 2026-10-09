@@ -88,14 +88,19 @@ namespace BackendService.DAL.Repositories
 			return true;
         }
 
-        public async Task<bool> UpdateStatusPublishedPost(int postPendingId, CancellationToken token = default)
+        public async Task<HashSet<int>> UpdateStatusPublishedPosts(IReadOnlyCollection<int> postPendingIds, CancellationToken token = default)
         {
-            PostPendingEntity? postPendingEntity = await _dbContext.PostsPending.FirstOrDefaultAsync(c => c.Id == postPendingId, token);
+            if (postPendingIds.Count == 0)
+                return [];
 
-			if (postPendingEntity == null) return false;
+            var postPendingEntities = await _dbContext.PostsPending
+                .Where(c => postPendingIds.Contains(c.Id))
+                .ToListAsync(token);
 
-            postPendingEntity.Status = StatusModerationEnum.SentForModeration;
-			return true;
+            foreach (var postPendingEntity in postPendingEntities)
+                postPendingEntity.Status = StatusModerationEnum.SentForModeration;
+
+            return postPendingEntities.Select(c => c.Id).ToHashSet();
 		}
 	}
 }

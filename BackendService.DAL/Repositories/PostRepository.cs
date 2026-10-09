@@ -10,10 +10,15 @@ namespace BackendService.DAL.Repositories
     {
         private readonly ApplicationDbContext _dbContext = dbContext;
         private readonly IMapper _mapper = mapper;
-        public async Task<List<PostDTO>> GetPosts(CancellationToken token = default)
+        public async Task<List<PostDTO>> GetPosts(int page, int pageSize, CancellationToken token = default)
         {
-			
-            return await _mapper.ProjectTo<PostDTO>(_dbContext.Posts.AsNoTracking().Where(c => c.Deleted == false).OrderBy(p => p.Id)).ToListAsync(token);
+            var query = _dbContext.Posts.AsNoTracking()
+                .Where(c => c.Deleted == false)
+                .OrderBy(p => p.Id)
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize);
+
+            return await _mapper.ProjectTo<PostDTO>(query).ToListAsync(token);
         }
 
         public async Task<PostDTO?> GetPostById(int postId, CancellationToken token = default)

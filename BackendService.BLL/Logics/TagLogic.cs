@@ -8,9 +8,15 @@ namespace BackendService.BLL.Logics
     {
         private readonly ITagRepository _tagRepository = tagRepository;
 
-        public async Task<List<TagEditDTO>> GetTags(CancellationToken token = default)
+        private const int MaxPageSize = 100;
+
+        public async Task<List<TagEditDTO>> GetTags(int page, int pageSize, CancellationToken token = default)
         {
-            return await _tagRepository.GetTags(token);
+            if (page < 1) throw new ValidationException("Номер страницы должен быть положительным целым числом");
+            if (pageSize < 1) throw new ValidationException("Размер страницы должен быть положительным целым числом");
+            if (pageSize > MaxPageSize) throw new ValidationException($"Размер страницы не должен превышать {MaxPageSize}");
+
+            return await _tagRepository.GetTags(page, pageSize, token);
         }
 
         public async Task<TagEditDTO?> GetTagById(int tagId, CancellationToken token = default)

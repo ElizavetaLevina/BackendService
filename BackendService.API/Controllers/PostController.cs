@@ -19,16 +19,19 @@ namespace BackendService.API.Controllers
         /// <summary>
         /// Получение списка постов
         /// </summary>
+        /// <param name="page">номер страницы (начиная с 1)</param>
+        /// <param name="pageSize">размер страницы</param>
         /// <param name="token">токен отмены</param>
         /// <returns>список постов</returns>
-        [SwaggerOperation(Summary = "Получение списка постов", Description = "Возвращает список всех постов из базы данных")]
+        [SwaggerOperation(Summary = "Получение списка постов", Description = "Возвращает страницу постов из базы данных")]
         [SwaggerResponse(200, "Успешный ответ", typeof(IReadOnlyList<PostDTO>))]
+        [SwaggerResponse(400, "Неверные параметры пагинации")]
         [SwaggerResponse(500, "Внутренняя ошибка сервера")]
         [Authorize(Policy = "UserRead")]
         [HttpGet("list")]
-        public async Task<ActionResult<IReadOnlyList<PostDTO>>> GetPosts(CancellationToken token = default)
+        public async Task<ActionResult<IReadOnlyList<PostDTO>>> GetPosts([FromQuery] int page = 1, [FromQuery] int pageSize = 20, CancellationToken token = default)
         {
-            return Ok(await _postLogic.GetPosts(token));
+            return Ok(await _postLogic.GetPosts(page, pageSize, token));
         }
 
         /// <summary>

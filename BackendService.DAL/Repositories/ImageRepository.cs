@@ -39,7 +39,7 @@ namespace BackendService.DAL.Repositories
 
         public async Task<int?> GetPostIdByImageId(int imageId, CancellationToken token = default)
         {
-			return (await _dbContext.Images.AsNoTracking().Where(c => c.Id == imageId).Select(c => c.Id).FirstOrDefaultAsync(token));
+			return (await _dbContext.Images.AsNoTracking().Where(c => c.Id == imageId).Select(c => c.PostId).FirstOrDefaultAsync(token));
         }
     }
 }

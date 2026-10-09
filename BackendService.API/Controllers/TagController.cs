@@ -14,7 +14,9 @@ namespace BackendService.API.Controllers
 
         /// <summary>
         /// Получение списка тегов
-        /// </summary>
+        /// </summary>        
+        /// <param name="page">номер страницы (начиная с 1)</param>
+        /// <param name="pageSize">размер страницы</param>
         /// <param name="token">токен отмены</param>
         /// <returns>список тегов</returns>
         [SwaggerOperation(Summary = "Получение списка тегов", Description = "Возвращает список всех тегов из базы данных")]
@@ -22,9 +24,9 @@ namespace BackendService.API.Controllers
         [SwaggerResponse(500, "Внутренняя ошибка сервера")]
         [Authorize(Policy = "UserRead")]
         [HttpGet("list")]
-        public async Task<ActionResult<IReadOnlyList<TagEditDTO>>> GetTags(CancellationToken token = default)
+        public async Task<ActionResult<IReadOnlyList<TagEditDTO>>> GetTags([FromQuery] int page = 1, [FromQuery] int pageSize = 20, CancellationToken token = default)
         {
-            return Ok(await _tagLogic.GetTags(token));
+            return Ok(await _tagLogic.GetTags(page, pageSize,token));
         }
 
         /// <summary>

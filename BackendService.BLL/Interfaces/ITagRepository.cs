@@ -7,9 +7,11 @@ namespace BackendService.BLL.Interfaces
         /// <summary>
         /// Получение списка тегов
         /// </summary>
+        /// <param name="page">Номер страницы (начиная с 1)</param>
+        /// <param name="pageSize">Размер страницы</param>
         /// <param name="token">токен отмены</param>
         /// <returns>список тегов</returns>
-        Task<List<TagEditDTO>> GetTags(CancellationToken token = default);
+        Task<List<TagEditDTO>> GetTags(int page, int pageSize, CancellationToken token = default);
 
         /// <summary>
         /// Получение тега по идентификатору
