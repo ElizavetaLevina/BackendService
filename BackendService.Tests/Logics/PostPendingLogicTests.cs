@@ -138,7 +138,7 @@ namespace BackendService.Tests.Logics
             _postPendingRepository.Setup(c => c.GetPostPendingById(postPendingId, It.IsAny<CancellationToken>())).ReturnsAsync(fakeDTO);
             _mapper.Setup(c => c.Map<PostEditDTO>(fakeDTO)).Returns(expectedEvent);
             _postRepository.Setup(c => c.SavePost(expectedEvent, fakeDTO.UserId, It.IsAny<CancellationToken>())).ReturnsAsync(true);
-            _postPendingRepository.Setup(c => c.DeletePostPending(postPendingId, It.IsAny<CancellationToken>())).ThrowsAsync(new Exception());
+            _postPendingRepository.Setup(c => c.DeletePostPending(postPendingId, It.IsAny<CancellationToken>())).ThrowsAsync(new InvalidOperationException());
 
             await Assert.ThrowsAsync<InvalidOperationException>(async() => await _postPendingLogic.ApprovePost(postPendingId));
 
@@ -166,7 +166,7 @@ namespace BackendService.Tests.Logics
         public async Task RejectPost_UpdateModerationResultThrows_ThrowsInvalidOperationException(int postPendingId)
         {
             var fakeDTO = new PostModeratedEvent { PendingId = postPendingId };
-            _postPendingRepository.Setup(c => c.UpdateModerationResult(fakeDTO, It.IsAny<CancellationToken>())).ThrowsAsync(new Exception());
+            _postPendingRepository.Setup(c => c.UpdateModerationResult(fakeDTO, It.IsAny<CancellationToken>())).ThrowsAsync(new InvalidOperationException());
 
             await Assert.ThrowsAsync<InvalidOperationException>(async() => await _postPendingLogic.RejectPost(fakeDTO));
 
