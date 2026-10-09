@@ -30,14 +30,14 @@ namespace BackendService.Tests.Helpers
             if (!response.IsSuccessStatusCode)
             {
                 var error = await response.Content.ReadAsStringAsync();
-                throw new Exception($"Keycloak token error: {response.StatusCode}, {error}");
+                throw new Exception($"Ошибка получения токена Keycloak: {response.StatusCode}, {error}");
             }
 
             var json = await response.Content.ReadAsStringAsync();
-            var tokenResponse = JsonSerializer.Deserialize<KeycloakTokenResponse>(json);
+            var tokenResponse = JsonSerializer.Deserialize<KeycloakTokenResponse>(json) ?? throw new InvalidOperationException("Не удалось десериализовать ответ с токеном");
 
-            return tokenResponse.AccessToken;
-        }
+			return tokenResponse.AccessToken;
+		}
     }
 
     public class KeycloakTokenResponse

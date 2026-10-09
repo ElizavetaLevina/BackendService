@@ -21,10 +21,10 @@ namespace BackendService.Tests.Logics
         [Fact]
         public async Task GetPosts_ReturnsListOfPosts()
         {
-            var fakeDTOs = new List<PostDTO> { new PostDTO { Id = 1 }, new PostDTO { Id = 2 } };
-            _postRepository.Setup(c => c.GetPosts(It.IsAny<CancellationToken>())).ReturnsAsync(fakeDTOs);
+            var fakeDTOs = new List<PostDTO> { new() { Id = 1 }, new() { Id = 2 } };
+            _postRepository.Setup(c => c.GetPosts(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<CancellationToken>())).ReturnsAsync(fakeDTOs);
 
-            var result = await _postLogic.GetPosts();
+            var result = await _postLogic.GetPosts(1, 20);
 
             Assert.NotNull(result);
             Assert.Equal(fakeDTOs.Count, result.Count);
@@ -52,7 +52,7 @@ namespace BackendService.Tests.Logics
 
             _postRepository.Setup(c => c.GetUserIdByPostId(postId, It.IsAny<CancellationToken>())).ReturnsAsync(ownerId);
 
-            _postRepository.Setup(c => c.DeletePost(postId, It.IsAny<CancellationToken>())).Returns(Task.CompletedTask);
+            _postRepository.Setup(c => c.DeletePost(postId, It.IsAny<CancellationToken>())).ReturnsAsync(true);
 
             await _postLogic.DeletePost(postId, userId);
 

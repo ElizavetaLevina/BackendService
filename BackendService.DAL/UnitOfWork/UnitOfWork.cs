@@ -3,7 +3,7 @@ using BackendService.DAL.Models;
 
 namespace BackendService.DAL.UnitOfWork
 {
-    public class UnitOfWork(ApplicationDbContext dbContext, IPostPendingRepository postPendingRepository, IPostRepository postRepository) : IUnitOfWork
+    public sealed class UnitOfWork(ApplicationDbContext dbContext, IPostPendingRepository postPendingRepository, IPostRepository postRepository) : IUnitOfWork
     {
         private readonly ApplicationDbContext _dbContext = dbContext;
 

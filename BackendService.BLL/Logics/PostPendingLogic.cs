@@ -19,29 +19,6 @@ namespace BackendService.BLL.Logics
             return await _postPendingRepository.GetPostsPending(token);
         }
 
-        public async Task<PostPendingViewDTO> GetPostPendingById(int postPendingId, CancellationToken token = default)
-        {
-            if (postPendingId <= 0) throw new ValidationException("ID должен быть положительным целым числом");
-
-            var postPending = await _postPendingRepository.GetPostPendingById(postPendingId, token);
-
-            return postPending is null ? throw new NotFoundException($"Пост с ID {postPendingId} не найден") : postPending;
-        }
-
-        public async Task DeletePostPending(int postPendingId, CancellationToken token = default)
-        {
-            if (postPendingId <= 0) throw new ValidationException("ID должен быть положительным целым числом");
-
-            try
-            {
-                await _postPendingRepository.DeletePostPending(postPendingId, token);
-            }
-            catch (InvalidOperationException)
-            {
-                throw new NotFoundException($"Пост с ID {postPendingId} не найден и не может быть удалён");
-            }
-        }
-
         public async Task<PostPendingEditDTO> SavePostPending(PostPendingEditDTO postPending, Guid userId, CancellationToken token = default)
         {
             if (postPending.Id < 0 || postPending.PostId < 0) throw new ValidationException("ID должен быть положительным целым числом");
@@ -52,54 +29,68 @@ namespace BackendService.BLL.Logics
 
             if (postPending.Id == 0 && postPending.PostId is not null && await IsPostOwner((int)postPending.PostId, userId, token) == false) throw new ForbiddenException("Недостаточно прав для редактирования поста");
 
-            try
-            {
-                var result = await _postPendingRepository.SavePostPending(postPending, userId, token);
-                return result ?? throw new NotFoundException($"Пост с ID {postPending.Id} не найден и не может быть отредактирован");
-			}
-            catch (Exception ex)
-            {
-                throw new InvalidOperationException($"Ошибка при сохранении поста", ex);
-            }
-        }
+			var result = await _postPendingRepository.SavePostPending(postPending, userId, token);
+			return result ?? throw new NotFoundException($"Пост с ID {postPending.Id} не найден и не может быть отредактирован");
+		}
 
         public async Task ApprovePost(int postPendingId, CancellationToken token = default)
         {
-            try
-            {
-                var postPending = await GetPostPendingById(postPendingId, token);
-                var post = _mapper.Map<PostEditDTO>(postPending);
-                await _postRepository.SavePost(post, postPending.UserId, token);
-                await DeletePostPending(postPending.Id, token);
+			var postPending = await GetPostPendingById(postPendingId, token);
+			var post = _mapper.Map<PostEditDTO>(postPending);
+			var saved = await _postRepository.SavePost(post, postPending.UserId, token);
 
-                await _unitOfWork.SaveChangesAsync(token);
-            }
-            catch (Exception ex)
-            {
-                throw new InvalidOperationException($"Ошибка при одобрении поста {postPendingId}", ex);
-            }
-        }
+			if (saved == false) throw new NotFoundException($"Пост с ID {postPendingId} не найден и не может быть сохранен");
+
+			await DeletePostPending(postPending.Id, token);
+
+			await _unitOfWork.SaveChangesAsync(token);
+		}
 
         public async Task RejectPost(PostModeratedEvent postModeratedEvent, CancellationToken token = default)
         {
-            try
-            {
-                await _postPendingRepository.UpdateModerationResult(postModeratedEvent, token);
-            }
-            catch (Exception ex)
-            {
-                throw new InvalidOperationException($"Ошибка при отклонении поста {postModeratedEvent.PendingId}", ex);
-            }
+			var updated = await _postPendingRepository.UpdateModerationResult(postModeratedEvent, token);
+
+			if (updated == false) throw new NotFoundException($"Пост {postModeratedEvent.PendingId} не найден при обновлении статуса");
         }
 
-        /// <summary>
-        /// Проверяет, является ли указанный пользователь владельцем поста
-        /// </summary>
-        /// <param name="postId">Идентификатор поста</param>
-        /// <param name="userId">Идентификатор пользователя для проверки</param>
-        /// <param name="token">Токен отмены</param>
-        /// <returns>Результат проверки</returns>
-        private async Task<bool> IsPostOwner(int postId, Guid userId, CancellationToken token = default)
+		/// <summary>
+		/// Получение поста на модерации по идентификатору
+		/// </summary>
+		/// <param name="postId">Идентификатор поста на модерации</param>
+		/// <param name="token">Токен отмены</param>
+		/// <returns><Пост/returns>
+		private async Task<PostPendingViewDTO> GetPostPendingById(int postPendingId, CancellationToken token = default)
+		{
+			if (postPendingId <= 0) throw new ValidationException("ID должен быть положительным целым числом");
+
+			var postPending = await _postPendingRepository.GetPostPendingById(postPendingId, token);
+
+			return postPending is null ? throw new NotFoundException($"Пост с ID {postPendingId} не найден") : postPending;
+		}
+
+		/// <summary>
+		/// Удаления поста
+		/// </summary>
+		/// <param name="postPendingId">Идентификатор поста для удаления</param>
+		/// <param name="token">Токен отмены</param>
+		/// <returns>Задача удаления</returns>
+		private async Task DeletePostPending(int postPendingId, CancellationToken token = default)
+		{
+			if (postPendingId <= 0) throw new ValidationException("ID должен быть положительным целым числом");
+
+			var deleted = await _postPendingRepository.DeletePostPending(postPendingId, token);
+
+			if (deleted == false) throw new NotFoundException($"Пост с ID {postPendingId} не найден и не может быть удалён");
+		}
+
+		/// <summary>
+		/// Проверяет, является ли указанный пользователь владельцем поста
+		/// </summary>
+		/// <param name="postId">Идентификатор поста</param>
+		/// <param name="userId">Идентификатор пользователя для проверки</param>
+		/// <param name="token">Токен отмены</param>
+		/// <returns>Результат проверки</returns>
+		private async Task<bool> IsPostOwner(int postId, Guid userId, CancellationToken token = default)
         {
             var userIdInPost = await _postRepository.GetUserIdByPostId(postId, token);
             return userIdInPost is null ? throw new NotFoundException($"Пост с ID {postId} не найден") : userId == userIdInPost;

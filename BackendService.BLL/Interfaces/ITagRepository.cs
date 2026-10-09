@@ -7,9 +7,11 @@ namespace BackendService.BLL.Interfaces
         /// <summary>
         /// Получение списка тегов
         /// </summary>
+        /// <param name="page">Номер страницы (начиная с 1)</param>
+        /// <param name="pageSize">Размер страницы</param>
         /// <param name="token">токен отмены</param>
         /// <returns>список тегов</returns>
-        Task<List<TagEditDTO>> GetTags(CancellationToken token = default);
+        Task<List<TagEditDTO>> GetTags(int page, int pageSize, CancellationToken token = default);
 
         /// <summary>
         /// Получение тега по идентификатору
@@ -20,12 +22,12 @@ namespace BackendService.BLL.Interfaces
         Task<TagEditDTO?> GetTagById(int tagId, CancellationToken token = default);
 
         /// <summary>
-        /// Удаление поста
+        /// Удаление тега
         /// </summary>
         /// <param name="tagId">идентификатор тега</param>
         /// <param name="token">токен отмены</param>
-        /// <returns>задача удаления</returns>
-        Task DeleteTag(int tagId, CancellationToken token = default);
+        /// <returns>удален ли тег</returns>
+        Task<bool> DeleteTag(int tagId, CancellationToken token = default);
 
         /// <summary>
         /// Сохранение тега
@@ -33,6 +35,6 @@ namespace BackendService.BLL.Interfaces
         /// <param name="tag">тег для сохранения</param>
         /// <param name="token">токен отмены</param>
         /// <returns>сохранённый тег</returns>
-        Task<TagEditDTO> SaveTag(TagEditDTO tag, CancellationToken token = default);
+        Task<TagEditDTO?> SaveTag(TagEditDTO tag, CancellationToken token = default);
     }
 }

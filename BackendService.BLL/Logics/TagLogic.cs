@@ -8,9 +8,15 @@ namespace BackendService.BLL.Logics
     {
         private readonly ITagRepository _tagRepository = tagRepository;
 
-        public async Task<List<TagEditDTO>> GetTags(CancellationToken token = default)
+        private const int MaxPageSize = 100;
+
+        public async Task<List<TagEditDTO>> GetTags(int page, int pageSize, CancellationToken token = default)
         {
-            return await _tagRepository.GetTags(token);
+            if (page < 1) throw new ValidationException("Номер страницы должен быть положительным целым числом");
+            if (pageSize < 1) throw new ValidationException("Размер страницы должен быть положительным целым числом");
+            if (pageSize > MaxPageSize) throw new ValidationException($"Размер страницы не должен превышать {MaxPageSize}");
+
+            return await _tagRepository.GetTags(page, pageSize, token);
         }
 
         public async Task<TagEditDTO?> GetTagById(int tagId, CancellationToken token = default)
@@ -26,28 +32,16 @@ namespace BackendService.BLL.Logics
         {
             if (tagId <= 0) throw new ValidationException("ID должен быть положительным целым числом");
 
-            try
-            {
-                await _tagRepository.DeleteTag(tagId, token);
-            }
-            catch (InvalidOperationException)
-            {
-                throw new NotFoundException($"Тег с ID {tagId} не найден и не может быть удалён");
-            }
+			var deleted = await _tagRepository.DeleteTag(tagId, token);
+
+			if (deleted == false) throw new NotFoundException($"Тег с ID {tagId} не найден и не может быть удалён");
         }
 
         public async Task<TagEditDTO> SaveTag(TagEditDTO tag, CancellationToken token = default)
         {
             if (tag.Id < 0) throw new ValidationException("ID должен быть положительным целым числом");
 
-            try
-            {
-                return await _tagRepository.SaveTag(tag, token);
-            }
-            catch (InvalidOperationException)
-            {
-                throw new NotFoundException($"Тег с ID {tag.Id} не найден и не может быть отредактирован");
-            }
+			return await _tagRepository.SaveTag(tag, token) ?? throw new NotFoundException($"Тег с ID {tag.Id} не найден и не может быть отредактирован");
         }
     }
 }

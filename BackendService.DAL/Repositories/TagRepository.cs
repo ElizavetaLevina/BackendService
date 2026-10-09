@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
-using BackendService.Common.DTO;
 using BackendService.BLL.Interfaces;
+using BackendService.Common.DTO;
 using BackendService.DAL.Models;
 using Microsoft.EntityFrameworkCore;
 
@@ -11,31 +11,49 @@ namespace BackendService.DAL.Repositories
         private readonly ApplicationDbContext _dbContext = dbContext;
         private readonly IMapper _mapper = mapper;
 
-        public async Task<List<TagEditDTO>> GetTags(CancellationToken token = default)
+        public async Task<List<TagEditDTO>> GetTags(int page, int pageSize, CancellationToken token = default)
         {
-            return await _mapper.ProjectTo<TagEditDTO>(_dbContext.Set<TagEntity>()).ToListAsync(token);
+            var query = _dbContext
+                .Tags.AsNoTracking()
+                .Where(c => !c.Deleted)
+                .OrderBy(c => c.Id)
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize);
+
+            return await _mapper.ProjectTo<TagEditDTO>(query).ToListAsync(token);
         }
 
         public async Task<TagEditDTO?> GetTagById(int tagId, CancellationToken token = default)
         {
-            return await _mapper.ProjectTo<TagEditDTO>(_dbContext.Set<TagEntity>()).FirstOrDefaultAsync(c => c.Id == tagId, token);
+            return await _mapper
+                .ProjectTo<TagEditDTO>(_dbContext.Tags.AsNoTracking().Where(c => c.Id == tagId))
+                .FirstOrDefaultAsync(token);
         }
 
-        public async Task DeleteTag(int tagId, CancellationToken token = default)
+        public async Task<bool> DeleteTag(int tagId, CancellationToken token = default)
         {
-            var postEntity = await _dbContext.Tags.Include(p => p.Posts).FirstAsync(p => p.Id == tagId, token);
+            var postEntity = await _dbContext.Tags.Include(p => p.Posts).FirstOrDefaultAsync(p => p.Id == tagId, token);
+
+            if (postEntity == null)
+                return false;
+
             postEntity.Posts.Clear();
             postEntity.Deleted = true;
             await _dbContext.SaveChangesAsync(token);
+            return true;
         }
 
-        public async Task<TagEditDTO> SaveTag(TagEditDTO tag, CancellationToken token = default)
+        public async Task<TagEditDTO?> SaveTag(TagEditDTO tag, CancellationToken token = default)
         {
-            TagEntity tagEntity;
+            TagEntity? tagEntity;
 
             if (tag.Id != 0)
             {
-                tagEntity = await _dbContext.Tags.FirstAsync(c => c.Id == tag.Id, token);
+                tagEntity = await _dbContext.Tags.FirstOrDefaultAsync(c => c.Id == tag.Id, token);
+
+                if (tagEntity == null)
+                    return null;
+
                 _mapper.Map(tag, tagEntity);
             }
             else

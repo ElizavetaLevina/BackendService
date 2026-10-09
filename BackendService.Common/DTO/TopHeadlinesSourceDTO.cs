@@ -1,6 +1,4 @@
-﻿using System.ComponentModel;
-
-namespace BackendService.Common.DTO
+﻿namespace BackendService.Common.DTO
 {
     /// <summary>
     /// Параметры запроса для формирования url

@@ -2,6 +2,7 @@
 using BackendService.Common.DTO;
 using BackendService.Common.Exceptions;
 using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
 
 namespace BackendService.BLL.Logics
 {
@@ -23,7 +24,7 @@ namespace BackendService.BLL.Logics
         {
             var postId = await _imageRepository.GetPostIdByImageId(imageId, token) ?? throw new NotFoundException($"Картинка с ID {imageId} не найдена и не может быть удалена");
 
-            if (await IsPostOwner((int)postId, userId, token) == false) throw new ForbiddenException("Недостаточно прав для удаления картинки");
+            if (await IsPostOwner(postId, userId, token) == false) throw new ForbiddenException("Недостаточно прав для удаления картинки");
 
             if (imageId <= 0) throw new ValidationException("ID должен быть положительным целым числом");
 
@@ -52,13 +53,20 @@ namespace BackendService.BLL.Logics
             {
                 return await _imageRepository.SaveImage(data, postId, token);
             }
-            catch (InvalidOperationException)
-            {
+            catch (DbUpdateException)
+			{
                 throw new NotFoundException($"Пост с ID {postId} не найден");
             }
         }
 
-        public async Task<bool> IsPostOwner(int postId, Guid userId, CancellationToken token = default)
+		/// <summary>
+		/// Проверяет, является ли указанный пользователь владельцем поста
+		/// </summary>
+		/// <param name="postId">идентификатор поста</param>
+		/// <param name="userId">идентификатор пользователя для проверки</param>
+		/// <param name="token">токен отмены</param>
+		/// <returns>результат проверки</returns>
+		private async Task<bool> IsPostOwner(int postId, Guid userId, CancellationToken token = default)
         {
             var userIdInPost = await _postRepository.GetUserIdByPostId(postId, token);
             return userId == userIdInPost;
