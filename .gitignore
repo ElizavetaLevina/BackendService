@@ -1,8 +1,7 @@
 **/obj/
 **/bin/
-.vs/
-.env
+.*
 **/logs/
-.postman/
 postman/
-.editorconfig
+dotrush.config.json
+*.csproj.user
